@@ -45,13 +45,11 @@
 }
 
 html {
-  min-width: 320px;
   background: var(--bg);
   scroll-behavior: smooth;
 }
 
 body {
-  min-width: 320px;
   min-height: 100vh;
   margin: 0;
   background: var(--bg);
@@ -86,6 +84,13 @@ a {
 .app-root {
   display: flex;
   min-height: 100vh;
+  flex-direction: column;
+}
+
+.app-shell-content {
+  display: flex;
+  min-height: 100vh;
+  flex: 1;
   flex-direction: column;
 }
 
@@ -159,7 +164,7 @@ a {
 }
 
 .menu-button {
-  display: none;
+  display: inline-grid;
 }
 
 .theme-toggle {
@@ -480,7 +485,6 @@ a {
   line-height: 1.7;
 }
 
-.placeholder-card,
 .information-card {
   border: 1px solid var(--border);
   border-radius: 18px;
@@ -489,22 +493,104 @@ a {
   box-shadow: 0 12px 32px rgb(11 11 11 / 4%);
 }
 
-.placeholder-card {
+.empty-state {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 16px;
-  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  background: var(--surface);
+  box-shadow: 0 12px 32px rgb(11 11 11 / 4%);
 }
 
-.placeholder-card p,
+.empty-state-icon {
+  display: inline-grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--primary-soft);
+  color: var(--primary);
+  font-size: 1.2rem;
+}
+
+.empty-state h2 {
+  margin: 0 0 6px;
+  font-size: 0.98rem;
+}
+
+.empty-state p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.profile-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr));
+  gap: 16px;
+}
+
+.profile-skeleton-card {
+  display: grid;
+  min-height: 210px;
+  justify-items: center;
+  align-content: center;
+  gap: 13px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  background: var(--surface);
+}
+
+.skeleton-block {
+  display: block;
+  background: linear-gradient(
+    100deg,
+    var(--surface-2) 30%,
+    color-mix(in srgb, var(--surface-2) 55%, var(--surface)) 50%,
+    var(--surface-2) 70%
+  );
+  background-size: 220% 100%;
+  animation: skeleton-shimmer 1.6s ease-in-out infinite;
+}
+
+.skeleton-avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+}
+
+.skeleton-line {
+  height: 12px;
+  border-radius: 99px;
+}
+
+.skeleton-name {
+  width: min(68%, 150px);
+}
+
+.skeleton-handle {
+  width: min(50%, 110px);
+}
+
+.skeleton-chip {
+  width: 76px;
+  height: 22px;
+  border-radius: 99px;
+}
+
+@keyframes skeleton-shimmer {
+  to {
+    background-position-x: -220%;
+  }
+}
+
 .information-card p {
   margin: 0;
   line-height: 1.7;
-}
-
-.placeholder-icon {
-  color: var(--primary);
-  font-size: 1.8rem;
 }
 
 .information-card {

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import { RouteErrorBoundary } from './RouteErrorBoundary';
 import { NavigationPanel } from './NavigationPanel';
 import { SiteFooter } from './SiteFooter';
 import { SiteHeader } from './SiteHeader';
@@ -15,10 +16,9 @@ export function AppShell() {
       return;
     }
 
-    const previousFocus =
-      document.activeElement instanceof HTMLElement
-        ? document.activeElement
-        : null;
+    const previousFocus = menuButtonRef.current;
+    const previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     closeButtonRef.current?.focus();
 
     function handleKeyDown(event: KeyboardEvent) {
@@ -55,25 +55,31 @@ export function AppShell() {
     document.addEventListener('keydown', handleKeyDown);
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = previousBodyOverflow;
       previousFocus?.focus();
     };
   }, [isMenuOpen]);
 
   return (
     <div className="app-root">
-      <SiteHeader
-        onMenuOpen={() => setIsMenuOpen(true)}
-        menuButtonRef={menuButtonRef}
-      />
-      <div className="app-frame">
-        <main className="main-content" id="main-content" tabIndex={-1}>
-          <Outlet />
-        </main>
-        <aside className="desktop-sidebar" aria-label="Sidebar">
-          <NavigationPanel />
-        </aside>
+      <div className="app-shell-content" aria-hidden={isMenuOpen}>
+        <SiteHeader
+          isMenuOpen={isMenuOpen}
+          onMenuOpen={() => setIsMenuOpen(true)}
+          menuButtonRef={menuButtonRef}
+        />
+        <div className="app-frame">
+          <main className="main-content" id="main-content" tabIndex={-1}>
+            <RouteErrorBoundary>
+              <Outlet />
+            </RouteErrorBoundary>
+          </main>
+          <aside className="desktop-sidebar" aria-label="Sidebar">
+            <NavigationPanel />
+          </aside>
+        </div>
+        <SiteFooter />
       </div>
-      <SiteFooter />
 
       {isMenuOpen && (
         <div className="drawer-layer">
@@ -89,6 +95,7 @@ export function AppShell() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="mobile-menu-title"
+            id="mobile-navigation"
           >
             <div className="drawer-header">
               <h2 id="mobile-menu-title">Menu</h2>

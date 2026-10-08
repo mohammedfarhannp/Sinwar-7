@@ -3,11 +3,16 @@ import { Link } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
 
 interface SiteHeaderProps {
+  isMenuOpen: boolean;
   onMenuOpen: () => void;
   menuButtonRef: RefObject<HTMLButtonElement>;
 }
 
-export function SiteHeader({ onMenuOpen, menuButtonRef }: SiteHeaderProps) {
+export function SiteHeader({
+  isMenuOpen,
+  onMenuOpen,
+  menuButtonRef,
+}: SiteHeaderProps) {
   return (
     <header className="site-header">
       <div className="site-header-inner">
@@ -18,6 +23,7 @@ export function SiteHeader({ onMenuOpen, menuButtonRef }: SiteHeaderProps) {
           onClick={onMenuOpen}
           aria-label="Open navigation menu"
           aria-haspopup="dialog"
+          aria-expanded={isMenuOpen}
         >
           <span aria-hidden="true">☰</span>
         </button>

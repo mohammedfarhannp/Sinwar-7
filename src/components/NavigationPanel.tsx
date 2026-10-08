@@ -1,35 +1,62 @@
-import { NavLink } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
 
 interface NavigationPanelProps {
   onNavigate?: () => void;
 }
 
-const linkClassName = ({ isActive }: { isActive: boolean }) =>
-  `navigation-link${isActive ? ' navigation-link-active' : ''}`;
+function linkClassName(isActive: boolean): string {
+  return `navigation-link${isActive ? ' navigation-link-active' : ''}`;
+}
 
 export function NavigationPanel({ onNavigate }: NavigationPanelProps) {
+  const { pathname } = useLocation();
+  const isProfileRoute = pathname.startsWith('/profile/');
+  const isSearchContext = pathname === '/search' || isProfileRoute;
+
   return (
     <div className="navigation-content">
       <p className="navigation-label">Explore</p>
       <nav aria-label="Main navigation" className="navigation-links">
-        <NavLink to="/" end className={linkClassName} onClick={onNavigate}>
+        <NavLink
+          to="/"
+          end
+          className={({ isActive }) => linkClassName(isActive)}
+          onClick={onNavigate}
+        >
           <span aria-hidden="true">⌂</span>
           <span>Home</span>
         </NavLink>
-        <NavLink to="/search" className={linkClassName} onClick={onNavigate}>
+        <Link
+          to="/search"
+          className={linkClassName(isSearchContext)}
+          aria-current={isSearchContext ? 'page' : undefined}
+          onClick={onNavigate}
+        >
           <span aria-hidden="true">⌕</span>
           <span>Search</span>
-        </NavLink>
-        <NavLink to="/blocked" className={linkClassName} onClick={onNavigate}>
+        </Link>
+        <NavLink
+          to="/blocked"
+          className={({ isActive }) => linkClassName(isActive)}
+          onClick={onNavigate}
+        >
           <span aria-hidden="true">✓</span>
           <span>Blocked list</span>
         </NavLink>
-        <NavLink to="/story" className={linkClassName} onClick={onNavigate}>
+        <NavLink
+          to="/story"
+          className={({ isActive }) => linkClassName(isActive)}
+          onClick={onNavigate}
+        >
           <span aria-hidden="true">◷</span>
           <span>Palestinian story</span>
         </NavLink>
-        <NavLink to="/about" className={linkClassName} onClick={onNavigate}>
+        <NavLink
+          to="/about"
+          className={({ isActive }) => linkClassName(isActive)}
+          onClick={onNavigate}
+        >
           <span aria-hidden="true">ⓘ</span>
           <span>About & methodology</span>
         </NavLink>
