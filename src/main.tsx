@@ -14,3 +14,9 @@ createRoot(rootElement).render(
     <App />
   </StrictMode>,
 );
+
+if (import.meta.env.PROD && 'serviceWorker' in navigator) {
+  void navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {
+    console.warn('Sinwar-7 offline support could not be enabled.');
+  });
+}
