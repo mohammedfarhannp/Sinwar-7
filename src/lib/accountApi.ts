@@ -13,17 +13,6 @@ const accountResponseSchema = z.object({
 
 export type AccountSearchResponse = z.infer<typeof searchResponseSchema>;
 
-let hasLoggedFallback = false;
-
-export function logAccountApiFallback(): void {
-  if (hasLoggedFallback) {
-    return;
-  }
-
-  hasLoggedFallback = true;
-  console.info('account_api_fallback');
-}
-
 export async function searchAccountsApi(
   query: string,
   category: AccountCategory | 'all',
