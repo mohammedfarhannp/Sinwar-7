@@ -1,6 +1,6 @@
 import type { Account } from '../types/account';
 import { ProfileCard } from './ProfileCard';
-import { motion } from 'motion/react';
+import { MotionConfig, motion } from 'motion/react';
 
 interface AccountCardGridProps {
   accounts: Account[];
@@ -16,22 +16,24 @@ export function AccountCardGrid({
   onRemove,
 }: AccountCardGridProps) {
   return (
-    <motion.div className="profile-grid" role="list" layout>
-      {accounts.map((account) => (
-        <motion.div
-          className="profile-grid-item"
-          role="listitem"
-          key={account.id}
-          layout
-        >
-          <ProfileCard
-            account={account}
-            isBlocked={isBlocked(account.username)}
-            onAdd={onAdd}
-            onRemove={onRemove}
-          />
-        </motion.div>
-      ))}
-    </motion.div>
+    <MotionConfig reducedMotion="user">
+      <motion.div className="profile-grid" role="list" layout>
+        {accounts.map((account) => (
+          <motion.div
+            className="profile-grid-item"
+            role="listitem"
+            key={account.id}
+            layout
+          >
+            <ProfileCard
+              account={account}
+              isBlocked={isBlocked(account.username)}
+              onAdd={onAdd}
+              onRemove={onRemove}
+            />
+          </motion.div>
+        ))}
+      </motion.div>
+    </MotionConfig>
   );
 }
