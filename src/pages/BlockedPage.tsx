@@ -1,23 +1,50 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { AccountCardGrid } from '../components/AccountCardGrid';
 import { DatasetNotice } from '../components/DatasetNotice';
 import { EmptyState } from '../components/EmptyState';
+import { ProfileSkeletonGrid } from '../components/ProfileSkeletonGrid';
 import { SEARCH_RESULT_PAGE_SIZE } from '../config/search';
-import { accounts } from '../data/accounts';
+import { loadAccountDirectory } from '../data/accountDirectory';
 import { useBlockedAccounts } from '../hooks/useBlockedAccounts';
+import type { Account } from '../types/account';
 
 export function BlockedPage() {
   const [visibleCount, setVisibleCount] = useState(SEARCH_RESULT_PAGE_SIZE);
+  const [accounts, setAccounts] = useState<Account[] | null>(null);
+  const [hasDirectoryError, setHasDirectoryError] = useState(false);
   const blocked = useBlockedAccounts();
+
+  useEffect(() => {
+    let isActive = true;
+    void loadAccountDirectory()
+      .then((directory) => {
+        if (isActive) {
+          setAccounts(directory);
+        }
+      })
+      .catch(() => {
+        if (isActive) {
+          setHasDirectoryError(true);
+        }
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
+
+  const isLoadingDirectory = accounts === null && !hasDirectoryError;
+  const directory = accounts ?? [];
   const blockedNames = new Set(blocked.usernames);
-  const knownAccountIds = new Set(accounts.map((account) => account.id));
-  const knownBlocked = accounts.filter((account) =>
+  const knownAccountIds = new Set(directory.map((account) => account.id));
+  const knownBlocked = directory.filter((account) =>
     blockedNames.has(account.username.toLowerCase()),
   );
   const visibleBlocked = knownBlocked.slice(0, visibleCount);
-  const otherBlocked = blocked.usernames.filter(
-    (username) => !knownAccountIds.has(username),
-  );
+  const otherBlocked =
+    accounts === null
+      ? []
+      : blocked.usernames.filter((username) => !knownAccountIds.has(username));
 
   return (
     <section
@@ -37,8 +64,11 @@ export function BlockedPage() {
         role="status"
         aria-live="polite"
       >
-        You’ve added {knownBlocked.length} / {accounts.length} profiles from the
-        current directory to your list.
+        {isLoadingDirectory
+          ? `Checking ${blocked.usernames.length.toLocaleString()} saved names against the directory…`
+          : hasDirectoryError
+            ? `${blocked.usernames.length.toLocaleString()} saved names are on this device; the directory could not be loaded.`
+            : `You’ve added ${knownBlocked.length} / ${directory.length} profiles from the current directory to your list.`}
       </p>
 
       {blocked.storageError && (
@@ -54,9 +84,11 @@ export function BlockedPage() {
           description="When you add a profile to your list, it will appear here."
           icon="✓"
         />
+      ) : isLoadingDirectory ? (
+        <ProfileSkeletonGrid />
       ) : (
         <>
-          {knownBlocked.length > 0 && (
+          {!hasDirectoryError && knownBlocked.length > 0 && (
             <>
               <AccountCardGrid
                 accounts={visibleBlocked}
@@ -89,25 +121,38 @@ export function BlockedPage() {
               )}
             </>
           )}
-          {otherBlocked.length > 0 && (
+          {(hasDirectoryError ? blocked.usernames : otherBlocked).length >
+            0 && (
             <section
               className="unmatched-blocked"
               aria-labelledby="other-blocked-title"
             >
-              <h2 id="other-blocked-title">Profiles outside this directory</h2>
+              <h2 id="other-blocked-title">
+                {hasDirectoryError
+                  ? 'Saved usernames'
+                  : 'Profiles outside this directory'}
+              </h2>
+              {hasDirectoryError && (
+                <p>
+                  The directory is unavailable, so these names could not be
+                  checked against it.
+                </p>
+              )}
               <ul>
-                {otherBlocked.map((username) => (
-                  <li key={username}>
-                    <span>@{username}</span>
-                    <button
-                      type="button"
-                      className="secondary-button"
-                      onClick={() => blocked.removeBlocked(username)}
-                    >
-                      Remove from my list
-                    </button>
-                  </li>
-                ))}
+                {(hasDirectoryError ? blocked.usernames : otherBlocked).map(
+                  (username) => (
+                    <li key={username}>
+                      <span>@{username}</span>
+                      <button
+                        type="button"
+                        className="secondary-button"
+                        onClick={() => blocked.removeBlocked(username)}
+                      >
+                        Remove from my list
+                      </button>
+                    </li>
+                  ),
+                )}
               </ul>
             </section>
           )}
