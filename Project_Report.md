@@ -37,9 +37,9 @@ Build a static-first, accessible web application for searching a curated list of
 | 2     | Static search, profile cards, personal blocked list                  | Complete    |
 | 3     | Account data pipeline, validation, cleaning report                   | Complete    |
 | 4     | Supabase schema/SQL migrations and secure server-side search         | Complete    |
-| 5     | Educational story and timeline                                       | Not started |
+| 5     | Educational story and timeline                                       | Complete    |
 | 6     | Feature-gated Donate and Stores & Apps sections                      | Complete    |
-| 7     | Performance, SEO, and PWA                                            | Not started |
+| 7     | Performance, SEO, and PWA                                            | Complete    |
 | 8     | Tests, CI/CD, launch documentation                                   | Not started |
 
 ## Phase 0 plan
@@ -171,7 +171,7 @@ Build a static-first, accessible web application for searching a curated list of
 
 ## Current completion and next step
 
-Phases 0 through 6 are complete (7 of 9 phases). Phase 5 delivered the sourced historical timeline at `/story`, filterable by period, plus the methodology note on `/about`. Phase 6 added independently gated Donate and Stores & Apps sections. Stop here for user review before starting Phase 7.
+Phases 0 through 7 are complete (8 of 9 phases). Phase 5 delivered the sourced historical timeline at `/story`, filterable by period, plus the methodology note on `/about`. Phase 6 added independently gated Donate and Stores & Apps sections. Phase 7 added lazy route loading, SEO metadata and crawl endpoints, and an offline-capable app shell. Stop here for user review before starting Phase 8.
 
 ## Phase 4 plan
 
@@ -273,6 +273,69 @@ Phases 0 through 6 are complete (7 of 9 phases). Phase 5 delivered the sourced h
 - `d3cba76` — `feat(navigation): expose gated sections` — `src/components/NavigationPanel.tsx`.
 - `34aa797` — `feat(donate): add gated landing page` — `src/pages/DonatePage.tsx`.
 - `ddc5d72` — `feat(stores): add gated landing page` — `src/pages/StoresAppsPage.tsx`.
+- The report is committed separately using the same one-file convention.
+
+## Phase 7 plan
+
+1. Split route pages into lazy-loaded chunks with an accessible route loading state, reducing the JavaScript needed before a user can start using the app.
+2. Add route-aware page titles, descriptions, canonical/Open Graph metadata, and crawl controls. Exclude the private local checklist and API paths from indexing; generate robots and sitemap responses for the active deployment origin.
+3. Add a web app manifest, app icon, and production-only service worker. Cache the app shell and versioned static assets for offline use, fall back to the shell for offline route navigation, and leave API requests uncached.
+4. Keep the build dependency-free and preserve local checklist privacy and feature gates.
+5. Run lint, typecheck, formatting, diff checks, and production builds with optional section flags off and on. Record bundle sizes, limitations, files, and commits; do not run the unit test suite unless requested.
+6. Commit every changed file separately with a file-specific Conventional Commit subject and second `-m` description. Stop for review before Phase 8.
+
+### Phase 7 execution log
+
+- 2026-10-10: User authorized continuing to Phase 7. The plan was recorded before implementation.
+- Lazy-loaded every route page, added an accessible route loading fallback, and scoped Motion's reduced-motion provider to the pages that use animation. The initial JavaScript entry is 179.69 KB raw / 58.66 KB gzip. The 4,073-account directory is emitted as a separate 968.65 KB raw / 51.96 KB gzip JSON asset instead of being parsed as a large JavaScript module on startup. Home and local search/profile fallback load that asset on demand; the build pipeline remains responsible for full Zod validation.
+- Added route-aware title, description, canonical, robots, Open Graph, and Twitter metadata. `/search` is `noindex, follow`; `/blocked` is `noindex, nofollow` and disallowed in robots. Added request-origin `robots.txt` and `sitemap.xml` routes; the sitemap includes three public content pages and all 4,073 profile URLs.
+- Added the web app manifest and SVG icon. A production-only service worker precaches the Vite build manifest's static assets, uses the cached shell when offline navigation fails, and does not cache `/api/` responses. The private checklist remains in browser local storage and is not copied into the service worker cache.
+- Checks passed: `npm run lint`, `npm run typecheck`, `npm run format:check`, `git diff --check`, `node --check public/sw.js`, JSON parsing for the manifest and Vercel config, and build-manifest file checks (21 manifest entries, 22 unique referenced files, none missing). `npx vite build` succeeded with both optional sections disabled and enabled. Enabled build output: CSS 24.96 KB raw / 6.25 KB gzip; HTML 1.13 KB raw / 0.48 KB gzip. No Vite chunk-size warning remains.
+- The unit test suite and browser-level install/offline interaction were not run. Route metadata is client-side because this remains a Vite SPA; crawlers that do not execute JavaScript will see the shared base metadata in `index.html`. Canonical and sitemap origins follow the active request host because no production hostname was supplied.
+
+### Files added or changed in Phase 7
+
+- API crawl endpoints and Vercel routing: `api/robots.ts`, `api/sitemap.ts`, `vercel.json`.
+- Build, HTML metadata, and PWA assets: `eslint.config.js`, `index.html`, `vite.config.ts`, `public/icon.svg`, `public/manifest.webmanifest`, `public/sw.js`, `src/main.tsx`.
+- Route loading, metadata, and motion scope: `src/App.tsx`, `src/components/AppShell.tsx`, `src/components/AccountCardGrid.tsx`, `src/components/PageMetadata.tsx`, `src/components/RouteLoadingFallback.tsx`, `src/pages/StoryPage.tsx`.
+- Static directory loading and local search fallback: `src/config/dataset.ts`, `src/data/accountDirectory.ts`, `src/data/accounts.ts`, `src/hooks/useAccountDetails.ts`, `src/hooks/useAccountSearch.ts`, `src/lib/accountApi.ts`, `src/lib/accountApiFallback.ts`, `src/lib/searchAccounts.ts`, `src/lib/searchAccountsCore.ts`, `src/lib/searchLocalDirectory.ts`, `src/lib/searchQuery.ts`.
+- Page integrations: `src/components/DatasetNotice.tsx`, `src/pages/BlockedPage.tsx`, `src/pages/HomePage.tsx`, `src/pages/ProfilePage.tsx`, `src/pages/SearchPage.tsx`.
+- Project memory: `Project_Report.md`.
+
+### Phase 7 per-file commits
+
+- `49ebed2` — `feat(seo): serve crawl directives` — `api/robots.ts`.
+- `d6f78ff` — `feat(seo): publish directory sitemap` — `api/sitemap.ts`.
+- `4dfb91f` — `chore(lint): declare worker globals` — `eslint.config.js`.
+- `29fba89` — `feat(seo): add base metadata and app links` — `index.html`.
+- `a8ef718` — `feat(pwa): add app icon` — `public/icon.svg`.
+- `5ed44e2` — `feat(pwa): add web app manifest` — `public/manifest.webmanifest`.
+- `31ae9a0` — `feat(pwa): cache the app shell offline` — `public/sw.js`.
+- `ad6dbf0` — `perf(routes): lazy load route pages` — `src/App.tsx`.
+- `38c9f52` — `perf(motion): scope reduced motion` — `src/components/AccountCardGrid.tsx`.
+- `3d2d64c` — `feat(app-shell): support lazy routes` — `src/components/AppShell.tsx`.
+- `652a00e` — `refactor(dataset): isolate preview notice` — `src/components/DatasetNotice.tsx`.
+- `ddbc94c` — `feat(seo): add route metadata` — `src/components/PageMetadata.tsx`.
+- `aea7106` — `feat(routes): add accessible loading state` — `src/components/RouteLoadingFallback.tsx`.
+- `0e5313c` — `refactor(dataset): move preview flag` — `src/config/dataset.ts`.
+- `d4bb82a` — `perf(data): load directory as JSON asset` — `src/data/accountDirectory.ts`.
+- `e26d8ca` — `perf(data): remove duplicate runtime validation` — `src/data/accounts.ts`.
+- `ac50d65` — `perf(profile): defer local data fallback` — `src/hooks/useAccountDetails.ts`.
+- `3a4741c` — `perf(search): defer local fallback` — `src/hooks/useAccountSearch.ts`.
+- `4f39f8e` — `refactor(api): isolate fallback telemetry` — `src/lib/accountApi.ts`.
+- `0c5a62a` — `refactor(api): centralize fallback telemetry` — `src/lib/accountApiFallback.ts`.
+- `4c2a8a5` — `refactor(search): delegate to shared ranking` — `src/lib/searchAccounts.ts`.
+- `d66f94d` — `refactor(search): extract shared ranking` — `src/lib/searchAccountsCore.ts`.
+- `4f61064` — `perf(search): load local directory on demand` — `src/lib/searchLocalDirectory.ts`.
+- `fe9a23e` — `refactor(search): isolate query normalization` — `src/lib/searchQuery.ts`.
+- `8a162fe` — `feat(pwa): register production worker` — `src/main.tsx`.
+- `2e213d9` — `perf(blocked): load directory asynchronously` — `src/pages/BlockedPage.tsx`.
+- `a826971` — `perf(home): fetch static directory asset` — `src/pages/HomePage.tsx`.
+- `a9f0c3f` — `feat(profile): report fallback load errors` — `src/pages/ProfilePage.tsx`.
+- `17556a0` — `feat(search): report fallback load errors` — `src/pages/SearchPage.tsx`.
+- `595cebd` — `perf(story): defer motion runtime` — `src/pages/StoryPage.tsx`.
+- `7956450` — `feat(seo): route robots and sitemap` — `vercel.json`.
+- `b070973` — `build(vite): emit asset manifest` — `vite.config.ts`.
 - The report is committed separately using the same one-file convention.
 
 ## Supabase cloud setup status
