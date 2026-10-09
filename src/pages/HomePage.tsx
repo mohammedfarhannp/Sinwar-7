@@ -1,18 +1,51 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AccountCardGrid } from '../components/AccountCardGrid';
 import { DatasetNotice } from '../components/DatasetNotice';
+import { EmptyState } from '../components/EmptyState';
+import { ProfileSkeletonGrid } from '../components/ProfileSkeletonGrid';
 import { SearchBar } from '../components/SearchBar';
-import { accounts } from '../data/accounts';
+import { loadAccountDirectory } from '../data/accountDirectory';
 import { useBlockedAccounts } from '../hooks/useBlockedAccounts';
+import type { Account } from '../types/account';
 
 const FEATURED_ACCOUNT_COUNT = 6;
 
 export function HomePage() {
   const [query, setQuery] = useState('');
+  const [featuredAccounts, setFeaturedAccounts] = useState<Account[]>([]);
+  const [directoryCount, setDirectoryCount] = useState(0);
+  const [isLoadingFeatured, setIsLoadingFeatured] = useState(true);
+  const [hasFeaturedError, setHasFeaturedError] = useState(false);
   const navigate = useNavigate();
   const blocked = useBlockedAccounts();
-  const featuredAccounts = accounts.slice(0, FEATURED_ACCOUNT_COUNT);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadFeaturedAccounts() {
+      try {
+        const accounts = await loadAccountDirectory();
+        if (controller.signal.aborted) {
+          return;
+        }
+        setFeaturedAccounts(accounts.slice(0, FEATURED_ACCOUNT_COUNT));
+        setDirectoryCount(accounts.length);
+      } catch {
+        if (controller.signal.aborted) {
+          return;
+        }
+        setHasFeaturedError(true);
+      } finally {
+        if (!controller.signal.aborted) {
+          setIsLoadingFeatured(false);
+        }
+      }
+    }
+
+    void loadFeaturedAccounts();
+    return () => controller.abort();
+  }, []);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -53,8 +86,9 @@ export function HomePage() {
               actions are part of this experience.
             </p>
             <p className="blocked-progress" aria-live="polite">
-              You’ve added {blocked.usernames.length} / {accounts.length}{' '}
-              profiles to your personal list.
+              {isLoadingFeatured || hasFeaturedError
+                ? `You have ${blocked.usernames.length} profiles on your personal list.`
+                : `You’ve added ${blocked.usernames.length} / ${directoryCount} profiles to your personal list.`}
             </p>
           </div>
         </div>
@@ -76,12 +110,21 @@ export function HomePage() {
             Browse the directory
           </Link>
         </div>
-        <AccountCardGrid
-          accounts={featuredAccounts}
-          isBlocked={blocked.isBlocked}
-          onAdd={blocked.addBlocked}
-          onRemove={blocked.removeBlocked}
-        />
+        {isLoadingFeatured && <ProfileSkeletonGrid />}
+        {!isLoadingFeatured && featuredAccounts.length > 0 && (
+          <AccountCardGrid
+            accounts={featuredAccounts}
+            isBlocked={blocked.isBlocked}
+            onAdd={blocked.addBlocked}
+            onRemove={blocked.removeBlocked}
+          />
+        )}
+        {!isLoadingFeatured && hasFeaturedError && (
+          <EmptyState
+            title="Featured profiles are unavailable"
+            description="Check your connection and reload the page to try again."
+          />
+        )}
       </section>
     </div>
   );
