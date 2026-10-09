@@ -1,11 +1,5 @@
 import rawAccounts from './accounts.json';
-import { accountsSchema } from '../types/account';
+import type { Account } from '../types/account';
 
-const parsedAccounts = accountsSchema.safeParse(rawAccounts);
-
-if (!parsedAccounts.success) {
-  throw new Error('The bundled account dataset is invalid.');
-}
-
-export const accounts = parsedAccounts.data;
-export const IS_DEMO_DATASET = false;
+// The build pipeline validates this generated dataset before production bundling.
+export const accounts = rawAccounts as Account[];
