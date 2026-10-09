@@ -1,15 +1,51 @@
 import { useEffect, useRef, useState } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { RouteErrorBoundary } from './RouteErrorBoundary';
 import { NavigationPanel } from './NavigationPanel';
 import { SiteFooter } from './SiteFooter';
 import { SiteHeader } from './SiteHeader';
 
 export function AppShell() {
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const closeButtonRef = useRef<HTMLButtonElement>(null);
   const drawerRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    function handleSearchShortcut(event: KeyboardEvent) {
+      if (
+        isMenuOpen ||
+        (!event.metaKey && !event.ctrlKey) ||
+        event.altKey ||
+        event.key.toLowerCase() !== 'k'
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+      const searchInput = document.querySelector<HTMLInputElement>(
+        '[data-account-search]',
+      );
+
+      if (searchInput) {
+        searchInput.focus();
+        searchInput.select();
+        return;
+      }
+
+      navigate('/search');
+      window.requestAnimationFrame(() => {
+        const nextSearchInput = document.querySelector<HTMLInputElement>(
+          '[data-account-search]',
+        );
+        nextSearchInput?.focus();
+      });
+    }
+
+    window.addEventListener('keydown', handleSearchShortcut);
+    return () => window.removeEventListener('keydown', handleSearchShortcut);
+  }, [isMenuOpen, navigate]);
 
   useEffect(() => {
     if (!isMenuOpen) {

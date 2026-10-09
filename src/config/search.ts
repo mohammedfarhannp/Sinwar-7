@@ -1,0 +1,6 @@
+export const SEARCH_DEBOUNCE_MS = 200;
+export const MIN_SEARCH_CHARACTERS = 2;
+export const SEARCH_FUZZY_THRESHOLD = 0.35;
+export const SEARCH_USERNAME_WEIGHT = 0.6;
+export const SEARCH_DISPLAY_NAME_WEIGHT = 0.3;
+export const SEARCH_TAGS_WEIGHT = 0.1;

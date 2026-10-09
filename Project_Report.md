@@ -34,7 +34,7 @@ Build a static-first, accessible web application for searching a curated list of
 | ----- | -------------------------------------------------------------------- | ----------- |
 | 0     | Vite/React/TypeScript scaffold, theme, app shell, route placeholders | Complete    |
 | 1     | Responsive shell polish and navigation behavior                      | Complete    |
-| 2     | Static search, profile cards, personal blocked list                  | Not started |
+| 2     | Static search, profile cards, personal blocked list                  | Complete    |
 | 3     | Account data pipeline, validation, cleaning report                   | Not started |
 | 4     | Supabase schema/SQL migrations and secure server-side search         | Not started |
 | 5     | Educational story and timeline                                       | Not started |
@@ -99,6 +99,41 @@ Build a static-first, accessible web application for searching a curated list of
 - Styles changed: `src/styles/theme.css`.
 - Project memory updated: `Project_Report.md`.
 
+## Phase 2 plan
+
+1. Add an explicitly labeled, synthetic 20-account dataset at the final import path without reading or changing `Accounts to Block.txt`.
+2. Add Zod schemas for account records and versioned local blocked-list storage, plus Fuse.js search with exact/prefix username priority and weighted fuzzy matching.
+3. Build a reusable profile card and avatar fallback that uses local bundled images only when available, otherwise generated initials; make copy and block actions accessible.
+4. Implement debounced search, Cmd/Ctrl+K focus, Escape-to-clear, category filters, result announcements, and profile detail routes.
+5. Implement the versioned `sinwar7:blocked` localStorage hook and blocked-list management page with progress count.
+6. Run the phase quality gate and responsive review, record files/checks/results, then stop for review before Phase 3.
+
+## Phase 2 execution log
+
+- 2026-10-09: User approved continuing the project. Completed Phase 2 and stopped at its review boundary. `Accounts to Block.txt` was not opened, parsed, or modified; its processing remains Phase 3 work. No external image/API requests were made.
+- Installed `fuse.js`, `zod`, and `motion`. Added 20 clearly labeled synthetic demo profiles; no real-account claims are made by the preview dataset.
+- Implemented validated account records, username-first exact/prefix/fuzzy search, weighted display-name/tag search, 200 ms debounce, 2-character minimum, category filters, URL query state, and Ctrl/Cmd+K focus / Escape-to-clear behavior.
+- Implemented profile detail pages, locally generated initials in place of remote avatars, copy controls, and add/remove block-list controls. Blocked usernames are normalized and persisted as versioned state in `sinwar7:blocked`; malformed/unavailable storage falls back safely, and the page reports storage write failures.
+- Added blocked-list management and progress counts, synthetic-data notices, and responsive styling. The app remains static-first in this phase.
+- Browser review: exact username search ranked first; fuzzy search returned the expected matching profiles; category filter returned the three athlete demos; a one-character query displayed the two-character minimum; Escape cleared the query and removed `q` from the URL; Ctrl/Cmd+K focused search; profile block add/remove and persistence across reload were verified. Search, profile, and blocked-list screens were reviewed at a 320 px viewport. Home had no horizontal overflow in the measured 320 px review.
+- Quality gate passed: `npm run lint`, `npm run typecheck`, `npm run test` (1 file, 2 tests), `npm run format:check`, and `npm run build`.
+- Production bundle: JavaScript 424.61 KB raw / 133.63 KB gzip; CSS 22.01 KB raw / 5.65 KB gzip; HTML 1.43 KB raw / 0.59 KB gzip.
+- Browser preview logged the two known React Router v7 future-flag advisories; no app runtime errors were observed.
+- Dependency audit limitation: installation reported 10 advisories (2 moderate, 8 high). `npm audit --json` could not reach `registry.npmjs.org` (`ENOTFOUND`), so exact package details and production impact could not be confirmed. No automatic dependency upgrades were applied.
+
+### Files added or changed in Phase 2
+
+- Root: `package.json`, `package-lock.json`, `Project_Report.md`.
+- App and pages changed: `src/App.tsx`, `src/components/AppShell.tsx`, `src/pages/HomePage.tsx`, `src/pages/ProfilePage.tsx`, `src/pages/BlockedPage.tsx`, `src/styles/theme.css`.
+- Components added: `src/components/AccountAvatar.tsx`, `AccountCardGrid.tsx`, `DatasetNotice.tsx`, `ProfileCard.tsx`, `SearchBar.tsx`.
+- Search and settings added: `src/config/search.ts`, `src/lib/searchAccounts.ts`, `src/hooks/useDebouncedValue.ts`.
+- Account and local storage added: `src/data/accounts.json`, `src/data/accounts.ts`, `src/types/account.ts`, `src/lib/blockedStorage.ts`, `src/hooks/useBlockedAccounts.ts`.
+- Page added: `src/pages/SearchPage.tsx`.
+
+### Supabase key safety note
+
+- The user asked whether the project URL and `sb_publishable_...` key can be public in a GitHub repository. Supabase documents publishable keys as intended for public client code; security depends on enabling RLS for exposed tables, granting only required operations, and writing least-privilege policies. Secret/service-role keys bypass RLS and must remain server-side. No backend integration was added in Phase 2. See [Supabase API keys](https://supabase.com/docs/guides/getting-started/api-keys) and [Supabase row-level security](https://supabase.com/docs/guides/database/postgres/row-level-security).
+
 ## Current completion and next step
 
-Phases 0 and 1 are complete (2 of 9 phases). Stop for review here. Phase 2, the static search, profile cards, and personal blocked list, has not started and requires user approval to continue.
+Phases 0, 1, and 2 are complete (3 of 9 phases). Phase 3 has not started. Stop here for user review; only begin Phase 3 after the user authorizes it. Phase 3 will process the current workspace `Accounts to Block.txt` as the account data source and produce validation/cleaning results.
