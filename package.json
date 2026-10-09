@@ -8,8 +8,11 @@
   },
   "scripts": {
     "dev": "vite",
+    "prebuild": "npm run data:build && npm run data:validate",
     "build": "npm run typecheck && vite build",
     "preview": "vite preview",
+    "data:build": "node --experimental-strip-types scripts/build-accounts.ts",
+    "data:validate": "node --experimental-strip-types scripts/validate-accounts.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",

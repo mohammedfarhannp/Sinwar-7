@@ -891,6 +891,21 @@ kbd {
   font-size: 0.74rem;
 }
 
+.search-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 20px;
+  color: var(--text-muted);
+  font-size: 0.82rem;
+}
+
+.search-pagination p {
+  margin: 0;
+}
+
 .storage-error {
   border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--border));
   border-radius: 12px;

@@ -39,7 +39,7 @@ export function HomePage() {
           onSubmit={handleSubmit}
         />
         <p className="phase-note">
-          Search by name, username, or category. Press Ctrl/⌘+K to focus the
+          Search a username and refine by category. Press Ctrl/⌘+K to focus the
           search field.
         </p>
         <DatasetNotice />

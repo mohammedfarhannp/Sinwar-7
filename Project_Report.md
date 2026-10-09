@@ -35,7 +35,7 @@ Build a static-first, accessible web application for searching a curated list of
 | 0     | Vite/React/TypeScript scaffold, theme, app shell, route placeholders | Complete    |
 | 1     | Responsive shell polish and navigation behavior                      | Complete    |
 | 2     | Static search, profile cards, personal blocked list                  | Complete    |
-| 3     | Account data pipeline, validation, cleaning report                   | Not started |
+| 3     | Account data pipeline, validation, cleaning report                   | Complete    |
 | 4     | Supabase schema/SQL migrations and secure server-side search         | Not started |
 | 5     | Educational story and timeline                                       | Not started |
 | 6     | Feature-gated Donate and Stores & Apps sections                      | Not started |
@@ -134,6 +134,41 @@ Build a static-first, accessible web application for searching a curated list of
 
 - The user asked whether the project URL and `sb_publishable_...` key can be public in a GitHub repository. Supabase documents publishable keys as intended for public client code; security depends on enabling RLS for exposed tables, granting only required operations, and writing least-privilege policies. Secret/service-role keys bypass RLS and must remain server-side. No backend integration was added in Phase 2. See [Supabase API keys](https://supabase.com/docs/guides/getting-started/api-keys) and [Supabase row-level security](https://supabase.com/docs/guides/database/postgres/row-level-security).
 
+## Phase 3 plan
+
+1. Inspect the current root `Accounts to Block.txt` format and determine a deterministic parser without changing source content.
+2. Move the latest source verbatim to `data/raw/accounts_to_block.txt` as specified in the approved project brief; retain a checksum in the report to verify its bytes were preserved.
+3. Add a `tsx` data-build script that trims handles, strips `@`, deduplicates case-insensitively, preserves original username casing where present, and flags invalid entries and known typo candidates for manual review; add unit coverage for these cleaning rules.
+4. Validate normalized records with Zod and emit `src/data/accounts.json` plus `data/reports/cleaning-report.json`, including every skipped or flagged source row and reason.
+5. Add `data:build` and `data:validate` scripts, including a >10% dataset-drop guard against the last successful build; keep image enrichment disabled so Phases 1–3 remain offline and static-first. Bound rendered search results so the full dataset does not create thousands of profile-card DOM nodes at once.
+6. Run lint, typecheck, tests, formatting, build, and data validation; record files/results in this report, then stop for review before Phase 4.
+
+## Phase 3 execution log
+
+- 2026-10-09: User authorized the next phase. Phase 3 is in progress. Plan recorded before processing the source list.
+- Moved the root list to `data/raw/accounts_to_block.txt` byte-for-byte. The SHA-256 is `b4c81d56abfe1e363c6497170a94f170ba793959ba91a7884ff92061b56d3b83` before and after the move.
+- Source inspection found 4,074 rows: 4,073 valid unique usernames, no duplicates, one invalid handle (`lizgillz?`) skipped with a report entry, and one known possible-typo handle (`bradleycooperroffical`) retained with a manual-review warning. Two source entries use mixed case; their original casing is preserved while IDs are lowercase.
+- Source rows contain usernames only. Imported display names remain null; category is `other`; tags are empty; no verification, identity, category, or avatar data is inferred. Avatar enrichment and runtime image requests are disabled.
+- Added cleaning, build, and validation scripts, a successful-count baseline, and unit tests. Installing the requested `tsx` runner failed because npm registry DNS resolution returned `ENOTFOUND`; scripts use Node's built-in TypeScript stripping, supported by the repository's Node >=22.12 engine, and keep the requested `.ts` entry points.
+- Added 48-at-a-time rendering to search results so the full directory does not mount thousands of profile cards at once.
+
+### Phase 3 results and verification
+
+- `npm run data:build` generates the full dataset and cleaning report. `npm run data:validate` checks every generated record with Zod, confirms source/report hashes and counts, verifies unique IDs and report issue totals, enforces the 10% drop guard, and records the last successful account count. `npm run build` runs both data commands through `prebuild`.
+- The validated output contains 4,073 accounts. The source has 4,074 rows. The malformed row `lizgillz?` is excluded and explicitly reported; `bradleycooperroffical` remains unchanged in the dataset with a manual-review note. No duplicates were found.
+- A small unit suite covers username normalization, casing preservation, duplicate and invalid-row handling, typo flags, terminal newlines, count-drop limits, and search ranking. Quality gate passed: `npm run lint`, `npm run typecheck`, `npm run test` (3 files, 7 tests), `npm run format:check`, and `npm run build`.
+- Direct Fuse.js timing over the 4,073-record dataset, using 96 exact-username queries after warm-up on the development machine, measured 10.19 ms median and 26.69 ms maximum. This is a local benchmark, not a measurement on a mid-range phone.
+- Production build output: JavaScript 1,144.52 KB raw / 186.05 KB gzip; CSS 22.21 KB raw / 5.68 KB gzip; HTML 1.43 KB raw / 0.59 KB gzip. The JavaScript bundle stays below the 200 KB gzip target. Vite reports a raw minified chunk size warning (>500 KB); code splitting remains planned for Phase 7.
+- Full-dataset browser review could not be completed: the sandbox denied local loopback socket access and the in-app browser timed out connecting to the temporary preview. The preview server was stopped. Build, schema/data validation, unit tests, and the Fuse benchmark succeeded.
+- `tsx` could not be installed because the npm registry DNS lookup returned `ENOTFOUND`. The scripts remain TypeScript entry points and run with Node's built-in `--experimental-strip-types`; this is compatible with the repository's Node >=22.12 engine. No new dependency or lockfile change was made.
+
+### Files added or changed in Phase 3
+
+- Root and source data: `package.json`, moved `Accounts to Block.txt` to `data/raw/accounts_to_block.txt`, `src/data/accounts.json`, `src/data/accounts.ts`, `Project_Report.md`.
+- Pipeline and reports: `scripts/build-accounts.ts`, `scripts/validate-accounts.ts`, `data/reports/cleaning-report.json`, `data/reports/account-count-baseline.json`.
+- Cleaning and tests: `src/lib/accountCleaning.ts`, `src/lib/accountCleaning.test.ts`, `src/lib/searchAccounts.test.ts`.
+- UI changes for the full directory: `src/components/DatasetNotice.tsx`, `src/components/SearchBar.tsx`, `src/config/search.ts`, `src/pages/HomePage.tsx`, `src/pages/SearchPage.tsx`, `src/pages/BlockedPage.tsx`, `src/styles/theme.css`.
+
 ## Current completion and next step
 
-Phases 0, 1, and 2 are complete (3 of 9 phases). Phase 3 has not started. Stop here for user review; only begin Phase 3 after the user authorizes it. Phase 3 will process the current workspace `Accounts to Block.txt` as the account data source and produce validation/cleaning results.
+Phases 0, 1, 2, and 3 are complete (4 of 9 phases). Phase 4 has not started. Stop here for review; only begin Phase 4 after the user authorizes it. The next phase covers server-side API routes and the Supabase SQL/RLS design.

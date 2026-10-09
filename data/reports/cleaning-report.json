@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2026-10-09T16:11:57.495Z",
+  "source": {
+    "path": "data/raw/accounts_to_block.txt",
+    "sha256": "b4c81d56abfe1e363c6497170a94f170ba793959ba91a7884ff92061b56d3b83"
+  },
+  "baseline": {
+    "previousSuccessfulAccountCount": 4073,
+    "maximumDropRatio": 0.1
+  },
+  "summary": {
+    "sourceRows": 4074,
+    "importedAccounts": 4073,
+    "skippedRows": 1,
+    "invalidHandlesSkipped": 1,
+    "duplicatesSkipped": 0,
+    "blankRowsSkipped": 0,
+    "flaggedAccounts": 1,
+    "trimmedRows": 0,
+    "leadingAtSignsRemoved": 0
+  },
+  "issues": [
+    {
+      "sourceLine": 229,
+      "sourceValue": "bradleycooperroffical",
+      "action": "included_with_warning",
+      "reasons": [
+        "Matches the known possible-typo review list; not auto-corrected."
+      ]
+    },
+    {
+      "sourceLine": 1738,
+      "sourceValue": "lizgillz?",
+      "action": "skipped",
+      "reasons": [
+        "Handle contains characters outside the allowed letters, numbers, period, and underscore set."
+      ]
+    }
+  ],
+  "limitations": [
+    "The source contains usernames only; display names and categories are not inferred.",
+    "Imported records use the other category until editorial metadata is verified.",
+    "No avatar enrichment or runtime image requests were made; initials are used as the fallback.",
+    "verifiedGuess is false because verification status was not present in the source."
+  ]
+}

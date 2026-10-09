@@ -1,17 +1,22 @@
+import { useState } from 'react';
 import { AccountCardGrid } from '../components/AccountCardGrid';
 import { DatasetNotice } from '../components/DatasetNotice';
 import { EmptyState } from '../components/EmptyState';
+import { SEARCH_RESULT_PAGE_SIZE } from '../config/search';
 import { accounts } from '../data/accounts';
 import { useBlockedAccounts } from '../hooks/useBlockedAccounts';
 
 export function BlockedPage() {
+  const [visibleCount, setVisibleCount] = useState(SEARCH_RESULT_PAGE_SIZE);
   const blocked = useBlockedAccounts();
   const blockedNames = new Set(blocked.usernames);
+  const knownAccountIds = new Set(accounts.map((account) => account.id));
   const knownBlocked = accounts.filter((account) =>
     blockedNames.has(account.username.toLowerCase()),
   );
+  const visibleBlocked = knownBlocked.slice(0, visibleCount);
   const otherBlocked = blocked.usernames.filter(
-    (username) => !accounts.some((account) => account.id === username),
+    (username) => !knownAccountIds.has(username),
   );
 
   return (
@@ -52,12 +57,37 @@ export function BlockedPage() {
       ) : (
         <>
           {knownBlocked.length > 0 && (
-            <AccountCardGrid
-              accounts={knownBlocked}
-              isBlocked={blocked.isBlocked}
-              onAdd={blocked.addBlocked}
-              onRemove={blocked.removeBlocked}
-            />
+            <>
+              <AccountCardGrid
+                accounts={visibleBlocked}
+                isBlocked={blocked.isBlocked}
+                onAdd={blocked.addBlocked}
+                onRemove={blocked.removeBlocked}
+              />
+              {knownBlocked.length > visibleBlocked.length && (
+                <div className="search-pagination">
+                  <p>
+                    Showing {visibleBlocked.length.toLocaleString()} of{' '}
+                    {knownBlocked.length.toLocaleString()} profiles on your
+                    list.
+                  </p>
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={() =>
+                      setVisibleCount((currentCount) =>
+                        Math.min(
+                          currentCount + SEARCH_RESULT_PAGE_SIZE,
+                          knownBlocked.length,
+                        ),
+                      )
+                    }
+                  >
+                    Show more profiles
+                  </button>
+                </div>
+              )}
+            </>
           )}
           {otherBlocked.length > 0 && (
             <section

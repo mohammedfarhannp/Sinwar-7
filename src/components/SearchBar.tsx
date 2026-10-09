@@ -27,7 +27,7 @@ export function SearchBar({
       role="search"
     >
       <label className="sr-only" htmlFor="account-search">
-        Search by name or username
+        Search by username
       </label>
       <span className="search-icon" aria-hidden="true">
         ⌕
@@ -39,7 +39,7 @@ export function SearchBar({
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Search a name or @username"
+        placeholder="Search an @username"
         autoComplete="off"
         aria-keyshortcuts="Control+K Meta+K"
       />

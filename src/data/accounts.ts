@@ -8,4 +8,4 @@ if (!parsedAccounts.success) {
 }
 
 export const accounts = parsedAccounts.data;
-export const IS_DEMO_DATASET = true;
+export const IS_DEMO_DATASET = false;

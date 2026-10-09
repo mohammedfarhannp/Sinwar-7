@@ -4,7 +4,11 @@ import { AccountCardGrid } from '../components/AccountCardGrid';
 import { DatasetNotice } from '../components/DatasetNotice';
 import { EmptyState } from '../components/EmptyState';
 import { SearchBar } from '../components/SearchBar';
-import { MIN_SEARCH_CHARACTERS, SEARCH_DEBOUNCE_MS } from '../config/search';
+import {
+  MIN_SEARCH_CHARACTERS,
+  SEARCH_DEBOUNCE_MS,
+  SEARCH_RESULT_PAGE_SIZE,
+} from '../config/search';
 import { IS_DEMO_DATASET, accounts } from '../data/accounts';
 import { useBlockedAccounts } from '../hooks/useBlockedAccounts';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
@@ -18,12 +22,18 @@ export function SearchPage() {
   const [selectedCategory, setSelectedCategory] = useState<
     AccountCategory | 'all'
   >('all');
+  const [pagination, setPagination] = useState({ key: '', count: 0 });
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
   const blocked = useBlockedAccounts();
   const normalizedQuery = normalizeSearchQuery(debouncedQuery);
   const isQueryTooShort =
     normalizedQuery.length > 0 &&
     normalizedQuery.length < MIN_SEARCH_CHARACTERS;
+  const paginationKey = JSON.stringify([normalizedQuery, selectedCategory]);
+  const visibleCount =
+    pagination.key === paginationKey
+      ? pagination.count
+      : SEARCH_RESULT_PAGE_SIZE;
 
   useEffect(() => {
     const trimmedQuery = debouncedQuery.trim();
@@ -43,6 +53,7 @@ export function SearchPage() {
     () => searchAccounts(debouncedQuery, selectedCategory),
     [debouncedQuery, selectedCategory],
   );
+  const visibleResults = results.slice(0, visibleCount);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -64,8 +75,8 @@ export function SearchPage() {
       <p className="eyebrow">Search the directory</p>
       <h1 id="search-title">Find a profile</h1>
       <p className="page-description">
-        Search by account name, username, or a descriptive tag. Review each
-        profile and decide for yourself what to do.
+        Search by username, then use category filters to narrow the list. Review
+        each profile and decide for yourself what to do.
       </p>
       <SearchBar
         compact
@@ -113,9 +124,13 @@ export function SearchPage() {
       >
         {isQueryTooShort
           ? `Type at least ${MIN_SEARCH_CHARACTERS} characters to search.`
-          : `${results.length} ${results.length === 1 ? 'profile' : 'profiles'} found${
+          : `${results.length.toLocaleString()} ${results.length === 1 ? 'profile' : 'profiles'} found${
               normalizedQuery ? ` for “${debouncedQuery.trim()}”` : ''
-            }${IS_DEMO_DATASET ? ' in the preview dataset' : ''}.`}
+            }${IS_DEMO_DATASET ? ' in the preview dataset' : ''}.${
+              results.length > visibleResults.length
+                ? ` Showing the first ${visibleResults.length.toLocaleString()}.`
+                : ''
+            }`}
       </p>
 
       {blocked.storageError && (
@@ -127,11 +142,37 @@ export function SearchPage() {
 
       {!isQueryTooShort && results.length > 0 && (
         <AccountCardGrid
-          accounts={results}
+          accounts={visibleResults}
           isBlocked={blocked.isBlocked}
           onAdd={blocked.addBlocked}
           onRemove={blocked.removeBlocked}
         />
+      )}
+
+      {!isQueryTooShort && results.length > visibleResults.length && (
+        <div className="search-pagination">
+          <p>
+            Showing {visibleResults.length.toLocaleString()} of{' '}
+            {results.length.toLocaleString()} profiles.
+          </p>
+          <button
+            type="button"
+            className="secondary-button"
+            onClick={() => {
+              setPagination((currentPagination) => ({
+                key: paginationKey,
+                count: Math.min(
+                  (currentPagination.key === paginationKey
+                    ? currentPagination.count
+                    : SEARCH_RESULT_PAGE_SIZE) + SEARCH_RESULT_PAGE_SIZE,
+                  results.length,
+                ),
+              }));
+            }}
+          >
+            Show more profiles
+          </button>
+        </div>
       )}
 
       {!isQueryTooShort && results.length === 0 && (
