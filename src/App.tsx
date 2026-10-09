@@ -6,9 +6,9 @@ import { AboutPage } from './pages/AboutPage';
 import { BlockedPage } from './pages/BlockedPage';
 import { HomePage } from './pages/HomePage';
 import { NotFoundPage } from './pages/NotFoundPage';
-import { PlaceholderPage } from './pages/PlaceholderPage';
 import { ProfilePage } from './pages/ProfilePage';
 import { SearchPage } from './pages/SearchPage';
+import { StoryPage } from './pages/StoryPage';
 
 export default function App() {
   return (
@@ -21,15 +21,7 @@ export default function App() {
               <Route path="/search" element={<SearchPage />} />
               <Route path="/profile/:username" element={<ProfilePage />} />
               <Route path="/blocked" element={<BlockedPage />} />
-              <Route
-                path="/story"
-                element={
-                  <PlaceholderPage
-                    title="Palestinian story"
-                    description="The educational timeline is planned for Phase 5."
-                  />
-                }
-              />
+              <Route path="/story" element={<StoryPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="*" element={<NotFoundPage />} />
             </Route>
