@@ -38,7 +38,7 @@ Build a static-first, accessible web application for searching a curated list of
 | 3     | Account data pipeline, validation, cleaning report                   | Complete    |
 | 4     | Supabase schema/SQL migrations and secure server-side search         | Complete    |
 | 5     | Educational story and timeline                                       | Not started |
-| 6     | Feature-gated Donate and Stores & Apps sections                      | Not started |
+| 6     | Feature-gated Donate and Stores & Apps sections                      | Complete    |
 | 7     | Performance, SEO, and PWA                                            | Not started |
 | 8     | Tests, CI/CD, launch documentation                                   | Not started |
 
@@ -171,7 +171,7 @@ Build a static-first, accessible web application for searching a curated list of
 
 ## Current completion and next step
 
-Phases 0, 1, 2, 3, 4, and 5 are complete (6 of 9 phases). Phase 5 delivered the sourced historical timeline at `/story`, filterable by period, plus the methodology note on `/about`. Stop here for user review before starting Phase 6.
+Phases 0 through 6 are complete (7 of 9 phases). Phase 5 delivered the sourced historical timeline at `/story`, filterable by period, plus the methodology note on `/about`. Phase 6 added independently gated Donate and Stores & Apps sections. Stop here for user review before starting Phase 7.
 
 ## Phase 4 plan
 
@@ -240,6 +240,40 @@ Phases 0, 1, 2, 3, 4, and 5 are complete (6 of 9 phases). Phase 5 delivered the 
 - `934087e` — `feat(story): build the history timeline` — `src/pages/StoryPage.tsx`.
 - `5d9e940` — `style(story): add responsive timeline layout` — `src/styles/theme.css`.
 - `Project_Report.md` is committed separately with the same one-file, file-specific commit convention. Phase 4's single commit was left intact because it already matches `origin/master`; the per-file convention begins with Phase 5.
+
+## Phase 6 plan
+
+1. Add independent Vite build-time flags for Donate and Stores & Apps, disabled by default.
+2. Replace the disabled navigation placeholders with links only when each section is enabled, and register routes under the same flags so disabled sections are not directly reachable.
+3. Add responsive, accessible landing pages for both sections with honest empty states until reviewed destinations are supplied; do not invent charities, apps, or store listings.
+4. Document the public build-time flags in `.env.example` and keep them separate from server-only Supabase credentials.
+5. Run lint, typecheck, formatting, and production builds with both flags disabled and enabled. Do not run the unit test suite unless requested. Record outcomes and exact changed files, then stop for review before Phase 7.
+6. Commit each changed file separately with a file-specific Conventional Commit subject and a second `-m` description, following the Phase 5 convention.
+
+### Phase 6 execution log
+
+- 2026-10-10: User authorized continuing to Phase 6. The plan was recorded before implementation.
+- Added independent build-time flags `VITE_ENABLE_DONATE` and `VITE_ENABLE_STORES_APPS`; both default to disabled unless their value is `true` (case-insensitive). Navigation links and client routes use the same flags, so disabled sections are not directly reachable.
+- Added accessible, responsive section pages with concise review guidance and empty states. No charities, apps, or store destinations were supplied, so none were invented or linked. Both pages are ready for reviewed static content and remain disabled by default.
+- Documented the flags in `.env.example`, separately from server-only Supabase credentials.
+- Checks passed: `npm run lint`, `npm run typecheck`, `npm run format:check`, `git diff --check`, and production builds with both flags disabled and enabled. The enabled build output was JavaScript 1,171.29 KB raw / 193.94 KB gzip, CSS 24.96 KB raw / 6.25 KB gzip, and HTML 0.64 KB raw / 0.37 KB gzip. The existing Vite warning for the raw JavaScript chunk exceeding 500 KB remains; the gzip bundle stays below 200 KB. The unit test suite was not run, as requested by the project plan.
+
+### Files added or changed in Phase 6
+
+- Feature configuration and public build settings: `.env.example`, `src/config/features.ts`.
+- Route and navigation gating: `src/App.tsx`, `src/components/NavigationPanel.tsx`.
+- Gated pages: `src/pages/DonatePage.tsx`, `src/pages/StoresAppsPage.tsx`.
+- Project memory: `Project_Report.md`.
+
+### Phase 6 per-file commits
+
+- `7b6a77b` — `chore(config): add optional section flags` — `.env.example`.
+- `e98f223` — `feat(features): add independent section flags` — `src/config/features.ts`.
+- `c9d88c6` — `feat(routes): gate optional section pages` — `src/App.tsx`.
+- `d3cba76` — `feat(navigation): expose gated sections` — `src/components/NavigationPanel.tsx`.
+- `34aa797` — `feat(donate): add gated landing page` — `src/pages/DonatePage.tsx`.
+- `ddc5d72` — `feat(stores): add gated landing page` — `src/pages/StoresAppsPage.tsx`.
+- The report is committed separately using the same one-file convention.
 
 ## Supabase cloud setup status
 
