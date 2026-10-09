@@ -45,6 +45,23 @@ export function ProfilePage() {
     );
   }
 
+  if (details.hasError) {
+    return (
+      <section className="content-page" aria-labelledby="profile-error-title">
+        <p className="eyebrow">Profile</p>
+        <h1 id="profile-error-title">Profile details are unavailable</h1>
+        <EmptyState
+          title="Could not load this profile"
+          description="Online lookup and the local directory could not be loaded. Check your connection and try again."
+          icon="⌕"
+        />
+        <Link className="primary-button inline-button" to="/search">
+          Search profiles
+        </Link>
+      </section>
+    );
+  }
+
   if (!account) {
     return (
       <section className="content-page" aria-labelledby="profile-missing-title">
