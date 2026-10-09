@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
+import { PageMetadata } from './PageMetadata';
 import { RouteErrorBoundary } from './RouteErrorBoundary';
 import { NavigationPanel } from './NavigationPanel';
+import { RouteLoadingFallback } from './RouteLoadingFallback';
 import { SiteFooter } from './SiteFooter';
 import { SiteHeader } from './SiteHeader';
 
@@ -98,6 +100,7 @@ export function AppShell() {
 
   return (
     <div className="app-root">
+      <PageMetadata />
       <div className="app-shell-content" aria-hidden={isMenuOpen}>
         <SiteHeader
           isMenuOpen={isMenuOpen}
@@ -107,7 +110,9 @@ export function AppShell() {
         <div className="app-frame">
           <main className="main-content" id="main-content" tabIndex={-1}>
             <RouteErrorBoundary>
-              <Outlet />
+              <Suspense fallback={<RouteLoadingFallback />}>
+                <Outlet />
+              </Suspense>
             </RouteErrorBoundary>
           </main>
           <aside className="desktop-sidebar" aria-label="Sidebar">
