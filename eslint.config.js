@@ -20,6 +20,15 @@ export default tseslint.config(
     },
   },
   {
+    files: ['public/**/*.js'],
+    languageOptions: {
+      globals: {
+        document: 'readonly',
+        window: 'readonly',
+      },
+    },
+  },
+  {
     files: ['src/**/*.{ts,tsx}', 'vite.config.ts', 'vitest.config.ts'],
     plugins: {
       react,

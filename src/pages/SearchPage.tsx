@@ -1,18 +1,16 @@
-import { useEffect, useMemo, useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { AccountCardGrid } from '../components/AccountCardGrid';
 import { DatasetNotice } from '../components/DatasetNotice';
 import { EmptyState } from '../components/EmptyState';
+import { ProfileSkeletonGrid } from '../components/ProfileSkeletonGrid';
 import { SearchBar } from '../components/SearchBar';
-import {
-  MIN_SEARCH_CHARACTERS,
-  SEARCH_DEBOUNCE_MS,
-  SEARCH_RESULT_PAGE_SIZE,
-} from '../config/search';
+import { MIN_SEARCH_CHARACTERS, SEARCH_DEBOUNCE_MS } from '../config/search';
 import { IS_DEMO_DATASET, accounts } from '../data/accounts';
+import { useAccountSearch } from '../hooks/useAccountSearch';
 import { useBlockedAccounts } from '../hooks/useBlockedAccounts';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
-import { normalizeSearchQuery, searchAccounts } from '../lib/searchAccounts';
+import { normalizeSearchQuery } from '../lib/searchAccounts';
 import { ACCOUNT_CATEGORIES, type AccountCategory } from '../types/account';
 
 export function SearchPage() {
@@ -22,18 +20,14 @@ export function SearchPage() {
   const [selectedCategory, setSelectedCategory] = useState<
     AccountCategory | 'all'
   >('all');
-  const [pagination, setPagination] = useState({ key: '', count: 0 });
   const debouncedQuery = useDebouncedValue(query, SEARCH_DEBOUNCE_MS);
   const blocked = useBlockedAccounts();
   const normalizedQuery = normalizeSearchQuery(debouncedQuery);
   const isQueryTooShort =
     normalizedQuery.length > 0 &&
     normalizedQuery.length < MIN_SEARCH_CHARACTERS;
-  const paginationKey = JSON.stringify([normalizedQuery, selectedCategory]);
-  const visibleCount =
-    pagination.key === paginationKey
-      ? pagination.count
-      : SEARCH_RESULT_PAGE_SIZE;
+  const accountSearch = useAccountSearch(debouncedQuery, selectedCategory);
+  const results = accountSearch.results;
 
   useEffect(() => {
     const trimmedQuery = debouncedQuery.trim();
@@ -48,12 +42,6 @@ export function SearchPage() {
       setSearchParams(nextParams, { replace: true });
     }
   }, [debouncedQuery, searchParams, setSearchParams]);
-
-  const results = useMemo(
-    () => searchAccounts(debouncedQuery, selectedCategory),
-    [debouncedQuery, selectedCategory],
-  );
-  const visibleResults = results.slice(0, visibleCount);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -124,13 +112,15 @@ export function SearchPage() {
       >
         {isQueryTooShort
           ? `Type at least ${MIN_SEARCH_CHARACTERS} characters to search.`
-          : `${results.length.toLocaleString()} ${results.length === 1 ? 'profile' : 'profiles'} found${
-              normalizedQuery ? ` for “${debouncedQuery.trim()}”` : ''
-            }${IS_DEMO_DATASET ? ' in the preview dataset' : ''}.${
-              results.length > visibleResults.length
-                ? ` Showing the first ${visibleResults.length.toLocaleString()}.`
-                : ''
-            }`}
+          : accountSearch.isLoading
+            ? 'Searching the directory…'
+            : `${accountSearch.total.toLocaleString()} ${accountSearch.total === 1 ? 'profile' : 'profiles'} found${
+                normalizedQuery ? ` for “${debouncedQuery.trim()}”` : ''
+              }${IS_DEMO_DATASET ? ' in the preview dataset' : ''}${
+                results.length < accountSearch.total
+                  ? ` Showing ${results.length.toLocaleString()}.`
+                  : ''
+              }`}
       </p>
 
       {blocked.storageError && (
@@ -140,51 +130,52 @@ export function SearchPage() {
         </p>
       )}
 
+      {!isQueryTooShort && accountSearch.isLoading && results.length === 0 && (
+        <ProfileSkeletonGrid />
+      )}
+
       {!isQueryTooShort && results.length > 0 && (
         <AccountCardGrid
-          accounts={visibleResults}
+          accounts={results}
           isBlocked={blocked.isBlocked}
           onAdd={blocked.addBlocked}
           onRemove={blocked.removeBlocked}
         />
       )}
 
-      {!isQueryTooShort && results.length > visibleResults.length && (
+      {!isQueryTooShort && results.length < accountSearch.total && (
         <div className="search-pagination">
           <p>
-            Showing {visibleResults.length.toLocaleString()} of{' '}
-            {results.length.toLocaleString()} profiles.
+            Showing {results.length.toLocaleString()} of{' '}
+            {accountSearch.total.toLocaleString()} profiles.
           </p>
           <button
             type="button"
             className="secondary-button"
-            onClick={() => {
-              setPagination((currentPagination) => ({
-                key: paginationKey,
-                count: Math.min(
-                  (currentPagination.key === paginationKey
-                    ? currentPagination.count
-                    : SEARCH_RESULT_PAGE_SIZE) + SEARCH_RESULT_PAGE_SIZE,
-                  results.length,
-                ),
-              }));
-            }}
+            disabled={accountSearch.isLoadingMore}
+            onClick={() => void accountSearch.loadMore()}
           >
-            Show more profiles
+            {accountSearch.isLoadingMore
+              ? 'Loading more…'
+              : 'Show more profiles'}
           </button>
         </div>
       )}
 
-      {!isQueryTooShort && results.length === 0 && (
-        <EmptyState
-          title="No matching profiles"
-          description="Try a different name, username, or spelling."
-          icon="⌕"
-        />
-      )}
+      {!isQueryTooShort &&
+        !accountSearch.isLoading &&
+        accountSearch.total === 0 && (
+          <EmptyState
+            title="No matching profiles"
+            description="Try a different name, username, or spelling."
+            icon="⌕"
+          />
+        )}
 
       <p className="search-data-count">
-        {accounts.length} profiles currently available in this directory.
+        {accountSearch.usingLocalFallback
+          ? `Online search is unavailable. Using the bundled directory of ${accounts.length.toLocaleString()} profiles.`
+          : `${accounts.length.toLocaleString()} profiles currently available in this directory.`}
       </p>
     </section>
   );

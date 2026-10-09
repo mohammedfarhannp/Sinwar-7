@@ -3,7 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { AccountAvatar } from '../components/AccountAvatar';
 import { DatasetNotice } from '../components/DatasetNotice';
 import { EmptyState } from '../components/EmptyState';
-import { accounts } from '../data/accounts';
+import { useAccountDetails } from '../hooks/useAccountDetails';
 import { useBlockedAccounts } from '../hooks/useBlockedAccounts';
 import type { Account } from '../types/account';
 
@@ -14,7 +14,8 @@ function formatCategory(category: Account['category']): string {
 export function ProfilePage() {
   const { username } = useParams();
   const normalizedUsername = username?.replace(/^@/, '').toLowerCase();
-  const account = accounts.find((item) => item.id === normalizedUsername);
+  const details = useAccountDetails(normalizedUsername);
+  const account = details.account;
   const blocked = useBlockedAccounts();
   const [copyMessage, setCopyMessage] = useState('');
 
@@ -30,6 +31,18 @@ export function ProfilePage() {
     } catch {
       setCopyMessage('Could not copy the profile link.');
     }
+  }
+
+  if (details.isLoading) {
+    return (
+      <section className="content-page" aria-labelledby="profile-loading-title">
+        <p className="eyebrow">Profile</p>
+        <h1 id="profile-loading-title">Loading profile details</h1>
+        <p role="status" aria-live="polite">
+          Looking up this account in the directory…
+        </p>
+      </section>
+    );
   }
 
   if (!account) {
@@ -58,6 +71,12 @@ export function ProfilePage() {
     >
       <p className="eyebrow">Profile details</p>
       <DatasetNotice />
+      {details.usingLocalFallback && (
+        <p className="search-data-count">
+          Online lookup is unavailable. Showing details from the bundled
+          directory.
+        </p>
+      )}
       <article className="profile-detail-card">
         <AccountAvatar account={account} size="profile" />
         <div className="profile-detail-copy">

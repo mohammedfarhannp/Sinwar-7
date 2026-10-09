@@ -1,6 +1,6 @@
 # Sinwar-7 Project Report
 
-Last updated: 2026-10-09
+Last updated: 2026-10-10
 
 ## Project objective
 
@@ -26,7 +26,7 @@ Build a static-first, accessible web application for searching a curated list of
 - Publishable key supplied by the user: `sb_publishable_k7XPQYmn-paxXn2v58DJoA_4EGJK9Fb`.
 - The supplied names use `NEXT_PUBLIC_`; this project uses Vite, so the integration will read `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` from the environment.
 - This is a publishable key, not a service-role key. Never put a service-role key in client code or this report.
-- Planned packages for integration: `@supabase/supabase-js` and `@supabase/ssr`, added when Phase 4 begins.
+- `@supabase/supabase-js` and `@supabase/ssr` were installed in Phase 4 as requested. The server routes use `@supabase/supabase-js`; no browser session/auth flow exists yet, so `@supabase/ssr` is not imported by the app.
 
 ## Phase plan
 
@@ -36,7 +36,7 @@ Build a static-first, accessible web application for searching a curated list of
 | 1     | Responsive shell polish and navigation behavior                      | Complete    |
 | 2     | Static search, profile cards, personal blocked list                  | Complete    |
 | 3     | Account data pipeline, validation, cleaning report                   | Complete    |
-| 4     | Supabase schema/SQL migrations and secure server-side search         | Not started |
+| 4     | Supabase schema/SQL migrations and secure server-side search         | Complete    |
 | 5     | Educational story and timeline                                       | Not started |
 | 6     | Feature-gated Donate and Stores & Apps sections                      | Not started |
 | 7     | Performance, SEO, and PWA                                            | Not started |
@@ -171,4 +171,37 @@ Build a static-first, accessible web application for searching a curated list of
 
 ## Current completion and next step
 
-Phases 0, 1, 2, and 3 are complete (4 of 9 phases). Phase 4 has not started. Stop here for review; only begin Phase 4 after the user authorizes it. The next phase covers server-side API routes and the Supabase SQL/RLS design.
+Phases 0, 1, 2, 3, and 4 are complete (5 of 9 phases). Phase 4 delivered Supabase SQL/RLS, server-side read APIs, API-first client integration with the static dataset fallback, and supporting security/deployment documentation. Stop at the Phase 4 boundary for user review before starting Phase 5.
+
+## Phase 4 plan
+
+1. Review the existing account shape, local Fuse search, routing, TypeScript and Vercel deployment setup; preserve the static dataset as a validated fallback.
+2. Add Supabase SQL migration and seed files for the 4,073 validated accounts, with indexes, RLS enabled, and only the required read grants/policies. No client-side database access or public write policy.
+3. Add same-origin Vercel serverless routes for search and account lookup. Validate input with Zod, bound pagination, apply a best-effort 60 requests/minute per-IP limit, use server-only Supabase credentials, and avoid logging/echoing request input.
+4. Change client search/profile loading to try the API first and fall back to the bundled dataset on network/API failures. Fallback telemetry, if implemented, contains no query, IP, or user identifier.
+5. Add safe environment examples, deployment/security guidance, and required response headers; never commit a Supabase secret.
+6. Run data validation plus lint, typecheck, tests, formatting, and production build. Update this report with actual results and the Phase 4 file list, then create one Phase 4 commit using the requested two `-m` arguments. Stop before Phase 5.
+
+### Phase 4 execution log
+
+- 2026-10-09: User authorized continuing to Phase 4 and requested an individual phase commit with a short subject plus a second `-m` description. The working tree and index were clean at the start; prior commits were already on `master` and matched `origin/master`.
+- Reviewed current Vercel Node.js Function docs and Supabase server-side secret-key, API security, and RLS guidance. Installed the requested `@supabase/supabase-js` and `@supabase/ssr` packages. The first sandboxed npm install could not resolve the registry; retrying the user-authorized install with network access succeeded. npm reported 10 dependency advisories (2 moderate, 8 high); no automatic upgrades were applied.
+- Added `public.accounts` schema, validation constraints and indexes, RLS with read-only anon/authenticated grants, a `SECURITY INVOKER` search RPC, and deterministic seed generation for all 4,073 validated accounts. The generated `supabase/seed.sql` is 423,196 bytes and uses idempotent upserts. `npm run build` regenerates the seed after rebuilding and validating the source dataset.
+- Added same-origin Vercel routes `GET /api/search` and `GET /api/account/:username`. Zod validates request parameters and API payloads, pagination is bounded, routes return generic errors, search is uncached, account detail responses are CDN-cached for one day, and each route applies a best-effort 60 requests/minute in-memory IP limit. That limit is per warm function instance, not a distributed quota.
+- Search and profile detail views now use the API first and fall back to the bundled JSON/Fuse search on request or response errors. The client emits one generic `account_api_fallback` console event per page context without a query, username, IP, or user identifier.
+- Added `.env.example`, `SECURITY.md`, Vercel security headers, and moved the pre-render theme setup to an external script so the CSP can disallow inline scripts. The known Supabase URL is included in the example; a secret key is not available in this workspace and must be set in Vercel as `SUPABASE_SECRET_KEY` (legacy `SUPABASE_SERVICE_ROLE_KEY` is supported). No secret was committed.
+- Verification passed: `npm run typecheck`, `npm run lint`, `npm run format:check`, `npm run db:seed:build` (4,073 schema-validated rows), and `npx vite build`. The client bundle is 1,153.54 KB raw / 188.39 KB gzip; CSS is 22.21 KB raw / 5.68 KB gzip; HTML is 0.64 KB raw / 0.37 KB gzip. Vite retains the existing raw JavaScript chunk-size warning (>500 KB); the gzip bundle remains below 200 KB.
+- The unit test suite was not run. The migration was reviewed but not applied to the remote Supabase project; neither a Supabase CLI nor `psql` is installed, and no server secret is available. The frontend production build was run directly with Vite rather than `npm run build`, to avoid rewriting the Phase 3 generated audit timestamps during this phase.
+
+### Files added or changed in Phase 4
+
+- Root/deployment/security: `.env.example`, `SECURITY.md`, `Project_Report.md`, `eslint.config.js`, `index.html`, `package.json`, `package-lock.json`, `tsconfig.json`, `vercel.json`.
+- Vercel API and server client: `api/search.ts`, `api/account/[username].ts`, `server/database.types.ts`, `server/http.ts`, `server/supabase.ts`.
+- Supabase schema/data: `supabase/config.toml`, `supabase/migrations/20261009183000_create_accounts.sql`, generated `supabase/seed.sql`, `scripts/build-supabase-seed.ts`.
+- Client integration: `public/theme-init.js`, `src/lib/accountApi.ts`, `src/hooks/useAccountSearch.ts`, `src/hooks/useAccountDetails.ts`, `src/pages/SearchPage.tsx`, `src/pages/ProfilePage.tsx`.
+
+### Phase 4 commit
+
+- Commit message: `feat: add Supabase-backed directory API`
+- Commit description: `Add server-side search and account routes, read-only RLS schema and seed data, API-first client fallback, and security/deployment guidance.`
+- Commit hash is included in the Phase 4 completion response.
