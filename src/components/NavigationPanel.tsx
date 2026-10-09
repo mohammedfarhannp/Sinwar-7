@@ -1,5 +1,6 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { ThemeToggle } from './ThemeToggle';
+import { features } from '../config/features';
 
 interface NavigationPanelProps {
   onNavigate?: () => void;
@@ -62,18 +63,34 @@ export function NavigationPanel({ onNavigate }: NavigationPanelProps) {
         </NavLink>
       </nav>
 
-      <div className="navigation-divider" />
-      <p className="navigation-label">More</p>
-      <div className="navigation-links">
-        <button className="navigation-link navigation-disabled" disabled>
-          <span aria-hidden="true">♡</span>
-          <span>Donate · coming soon</span>
-        </button>
-        <button className="navigation-link navigation-disabled" disabled>
-          <span aria-hidden="true">▦</span>
-          <span>Stores & apps · coming soon</span>
-        </button>
-      </div>
+      {(features.donate || features.storesApps) && (
+        <>
+          <div className="navigation-divider" />
+          <p className="navigation-label">More</p>
+          <nav aria-label="More" className="navigation-links">
+            {features.donate && (
+              <NavLink
+                to="/donate"
+                className={({ isActive }) => linkClassName(isActive)}
+                onClick={onNavigate}
+              >
+                <span aria-hidden="true">♡</span>
+                <span>Donate</span>
+              </NavLink>
+            )}
+            {features.storesApps && (
+              <NavLink
+                to="/stores-apps"
+                className={({ isActive }) => linkClassName(isActive)}
+                onClick={onNavigate}
+              >
+                <span aria-hidden="true">▦</span>
+                <span>Stores & apps</span>
+              </NavLink>
+            )}
+          </nav>
+        </>
+      )}
 
       <div className="navigation-divider" />
       <p className="navigation-label">Settings</p>
