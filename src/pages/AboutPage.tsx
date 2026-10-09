@@ -17,8 +17,12 @@ export function AboutPage() {
       <div className="information-card">
         <h2>Methodology</h2>
         <p>
-          Editorial sourcing and update practices will be documented as the
-          directory and educational sections are built.
+          Timeline entries are a concise selection, checked against the public
+          records linked on each entry, including United Nations resolutions,
+          reports, and court documents. Legal findings are attributed to the
+          body that issued them. Dates and descriptions may be revised when
+          source records are corrected or new records become available, and
+          historical interpretations can differ.
         </p>
       </div>
     </section>
