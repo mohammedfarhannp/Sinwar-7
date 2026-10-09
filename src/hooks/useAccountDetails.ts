@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { accounts } from '../data/accounts';
-import { getAccountApi, logAccountApiFallback } from '../lib/accountApi';
+import { logAccountApiFallback } from '../lib/accountApiFallback';
+import { getAccountApi } from '../lib/accountApi';
 import type { Account } from '../types/account';
 
 type DetailsState = {
@@ -8,6 +8,7 @@ type DetailsState = {
   account: Account | null;
   isLoading: boolean;
   usingLocalFallback: boolean;
+  hasError: boolean;
 };
 
 export function useAccountDetails(username: string | undefined) {
@@ -16,6 +17,7 @@ export function useAccountDetails(username: string | undefined) {
     account: null,
     isLoading: true,
     usingLocalFallback: false,
+    hasError: false,
   });
 
   useEffect(() => {
@@ -34,21 +36,43 @@ export function useAccountDetails(username: string | undefined) {
             account,
             isLoading: false,
             usingLocalFallback: false,
+            hasError: false,
           });
         }
       })
-      .catch(() => {
+      .catch(async () => {
         if (controller.signal.aborted) {
           return;
         }
         logAccountApiFallback();
-        const account = accounts.find((item) => item.id === normalizedUsername);
-        setState({
-          username: normalizedUsername,
-          account: account ?? null,
-          isLoading: false,
-          usingLocalFallback: true,
-        });
+        try {
+          const { loadAccountDirectory } =
+            await import('../data/accountDirectory');
+          const accounts = await loadAccountDirectory();
+          if (controller.signal.aborted) {
+            return;
+          }
+          const account = accounts.find(
+            (item) => item.id === normalizedUsername,
+          );
+          setState({
+            username: normalizedUsername,
+            account: account ?? null,
+            isLoading: false,
+            usingLocalFallback: true,
+            hasError: false,
+          });
+        } catch {
+          if (!controller.signal.aborted) {
+            setState({
+              username: normalizedUsername,
+              account: null,
+              isLoading: false,
+              usingLocalFallback: false,
+              hasError: true,
+            });
+          }
+        }
       });
 
     return () => controller.abort();
@@ -61,6 +85,7 @@ export function useAccountDetails(username: string | undefined) {
       account: null,
       isLoading: false,
       usingLocalFallback: false,
+      hasError: false,
     };
   }
 
@@ -71,5 +96,6 @@ export function useAccountDetails(username: string | undefined) {
         account: null,
         isLoading: Boolean(normalizedUsername),
         usingLocalFallback: false,
+        hasError: false,
       };
 }
