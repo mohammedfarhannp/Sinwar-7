@@ -3,8 +3,9 @@ import {
   MIN_SEARCH_CHARACTERS,
   SEARCH_RESULT_PAGE_SIZE,
 } from '../config/search';
-import { normalizeSearchQuery, searchAccounts } from '../lib/searchAccounts';
-import { logAccountApiFallback, searchAccountsApi } from '../lib/accountApi';
+import { normalizeSearchQuery } from '../lib/searchQuery';
+import { logAccountApiFallback } from '../lib/accountApiFallback';
+import { searchAccountsApi } from '../lib/accountApi';
 import type { Account, AccountCategory } from '../types/account';
 
 type SearchState = {
@@ -14,6 +15,7 @@ type SearchState = {
   isLoading: boolean;
   isLoadingMore: boolean;
   usingLocalFallback: boolean;
+  hasError: boolean;
 };
 
 const EMPTY_STATE: SearchState = {
@@ -23,6 +25,7 @@ const EMPTY_STATE: SearchState = {
   isLoading: true,
   isLoadingMore: false,
   usingLocalFallback: false,
+  hasError: false,
 };
 
 export function useAccountSearch(
@@ -69,9 +72,10 @@ export function useAccountSearch(
           isLoading: false,
           isLoadingMore: false,
           usingLocalFallback: false,
+          hasError: false,
         });
       })
-      .catch(() => {
+      .catch(async () => {
         if (
           controller.signal.aborted ||
           requestGeneration !== generation.current
@@ -80,15 +84,41 @@ export function useAccountSearch(
         }
 
         logAccountApiFallback();
-        const fallbackResults = searchAccounts(query, category);
-        setState({
-          key: searchKey,
-          results: fallbackResults.slice(0, SEARCH_RESULT_PAGE_SIZE),
-          total: fallbackResults.length,
-          isLoading: false,
-          isLoadingMore: false,
-          usingLocalFallback: true,
-        });
+        try {
+          const { searchLocalDirectory } =
+            await import('../lib/searchLocalDirectory');
+          if (
+            controller.signal.aborted ||
+            requestGeneration !== generation.current
+          ) {
+            return;
+          }
+          const fallbackResults = await searchLocalDirectory(query, category);
+          if (
+            controller.signal.aborted ||
+            requestGeneration !== generation.current
+          ) {
+            return;
+          }
+          setState({
+            key: searchKey,
+            results: fallbackResults.slice(0, SEARCH_RESULT_PAGE_SIZE),
+            total: fallbackResults.length,
+            isLoading: false,
+            isLoadingMore: false,
+            usingLocalFallback: true,
+            hasError: false,
+          });
+        } catch {
+          if (!controller.signal.aborted) {
+            setState({
+              ...EMPTY_STATE,
+              key: searchKey,
+              isLoading: false,
+              hasError: true,
+            });
+          }
+        }
       })
       .finally(() => controllers.delete(controller));
 
@@ -130,19 +160,29 @@ export function useAccountSearch(
     );
 
     if (currentState.usingLocalFallback) {
-      const fallbackResults = searchAccounts(query, category);
-      setState((previous) =>
-        previous.key === searchKey
-          ? {
-              ...previous,
-              results: fallbackResults.slice(
-                0,
-                offset + SEARCH_RESULT_PAGE_SIZE,
-              ),
-              isLoadingMore: false,
-            }
-          : previous,
-      );
+      try {
+        const { searchLocalDirectory } =
+          await import('../lib/searchLocalDirectory');
+        const fallbackResults = await searchLocalDirectory(query, category);
+        setState((previous) =>
+          previous.key === searchKey
+            ? {
+                ...previous,
+                results: fallbackResults.slice(
+                  0,
+                  offset + SEARCH_RESULT_PAGE_SIZE,
+                ),
+                isLoadingMore: false,
+              }
+            : previous,
+        );
+      } catch {
+        setState((previous) =>
+          previous.key === searchKey
+            ? { ...previous, isLoadingMore: false, hasError: true }
+            : previous,
+        );
+      }
       return;
     }
 
@@ -177,21 +217,46 @@ export function useAccountSearch(
         return;
       }
       logAccountApiFallback();
-      const fallbackResults = searchAccounts(query, category);
-      setState((previous) =>
-        previous.key === searchKey
-          ? {
-              ...previous,
-              results: fallbackResults.slice(
-                0,
-                offset + SEARCH_RESULT_PAGE_SIZE,
-              ),
-              total: fallbackResults.length,
-              isLoadingMore: false,
-              usingLocalFallback: true,
-            }
-          : previous,
-      );
+      try {
+        const { searchLocalDirectory } =
+          await import('../lib/searchLocalDirectory');
+        if (
+          controller.signal.aborted ||
+          requestGeneration !== generation.current
+        ) {
+          return;
+        }
+        const fallbackResults = await searchLocalDirectory(query, category);
+        if (
+          controller.signal.aborted ||
+          requestGeneration !== generation.current
+        ) {
+          return;
+        }
+        setState((previous) =>
+          previous.key === searchKey
+            ? {
+                ...previous,
+                results: fallbackResults.slice(
+                  0,
+                  offset + SEARCH_RESULT_PAGE_SIZE,
+                ),
+                total: fallbackResults.length,
+                isLoadingMore: false,
+                usingLocalFallback: true,
+                hasError: false,
+              }
+            : previous,
+        );
+      } catch {
+        if (!controller.signal.aborted) {
+          setState((previous) =>
+            previous.key === searchKey
+              ? { ...previous, isLoadingMore: false, hasError: true }
+              : previous,
+          );
+        }
+      }
     } finally {
       activeControllers.current.delete(controller);
     }
