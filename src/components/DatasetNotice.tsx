@@ -1,4 +1,4 @@
-import { IS_DEMO_DATASET } from '../data/accounts';
+import { IS_DEMO_DATASET } from '../config/dataset';
 
 export function DatasetNotice() {
   if (IS_DEMO_DATASET) {
