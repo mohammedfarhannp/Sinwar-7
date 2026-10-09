@@ -171,7 +171,7 @@ Build a static-first, accessible web application for searching a curated list of
 
 ## Current completion and next step
 
-Phases 0, 1, 2, 3, and 4 are complete (5 of 9 phases). Phase 4 delivered Supabase SQL/RLS, server-side read APIs, API-first client integration with the static dataset fallback, and supporting security/deployment documentation. Stop at the Phase 4 boundary for user review before starting Phase 5.
+Phases 0, 1, 2, 3, 4, and 5 are complete (6 of 9 phases). Phase 5 delivered the sourced historical timeline at `/story`, filterable by period, plus the methodology note on `/about`. Stop here for user review before starting Phase 6.
 
 ## Phase 4 plan
 
@@ -205,3 +205,38 @@ Phases 0, 1, 2, 3, and 4 are complete (5 of 9 phases). Phase 4 delivered Supabas
 - Commit message: `feat: add Supabase-backed directory API`
 - Commit description: `Add server-side search and account routes, read-only RLS schema and seed data, API-first client fallback, and security/deployment guidance.`
 - Commit hash is included in the Phase 4 completion response.
+
+## Phase 5 plan
+
+1. Replace the `/story` placeholder with an accessible, responsive, data-driven historical timeline, with event content in `src/data/timeline.json` and a validated TypeScript data interface.
+2. Use concise, dated descriptions supported by primary United Nations and International Court of Justice sources where possible. Attribute legal findings to the issuing court and keep event summaries neutral; include source disclosures on each event.
+3. Add era filter chips and a desktop alternating / mobile single-column layout. Reveal events on scroll with a fade only when the user has not requested reduced motion.
+4. Replace the `/about` methodology placeholder with a short note on source selection, dates, attribution, and updates.
+5. Run lint, typecheck, format check, and production build; do not run the unit test suite unless the user asks. Record exact changed files, check results, and per-file commits below.
+6. Commit each changed file in its own commit with a file-specific Conventional Commit subject and a second `-m` description. This policy starts in Phase 5; Phase 4 remains as committed because it is already at `origin/master` and rewriting it would require a force-push.
+7. Stop at the Phase 5 boundary for user review; Phase 6 remains unstarted.
+
+### Phase 5 execution log
+
+- 2026-10-10: User authorized continuing to Phase 5 and clarified that every changed file must receive its own commit, with a file-specific subject and description. This plan was recorded before editing application code.
+- Added 20 editable timeline entries in `src/data/timeline.json`, covering 1917 through the UN's 24 September 2026 report. Entries include dates, period labels, concise summaries, contextual detail, and one or more direct source links. Legal findings are attributed to the ICJ; contested historical interpretation is identified as such; no casualty totals are included.
+- Added Zod validation for entry fields, date formats, unique IDs, and source URLs. The timeline page now offers period filter buttons, an announced result count, native source disclosures, desktop alternating cards, a mobile single-column layout, and scroll-triggered fade-in when reduced motion is not preferred.
+- Replaced the `/story` placeholder route and added a short `/about` methodology note describing linked public records, attribution, corrections, and differing historical interpretations.
+- Verification passed: `npm run lint`, `npm run typecheck`, `npm run format:check`, `git diff --check`, and `npx vite build`. Production output: JavaScript 1,169.76 KB raw / 193.51 KB gzip; CSS 24.96 KB raw / 6.25 KB gzip; HTML 0.64 KB raw / 0.37 KB gzip. Vite still reports the existing raw JavaScript chunk-size warning (>500 KB); gzip remains below 200 KB. The unit test suite was not run, and no test files were added.
+
+### Files added or changed in Phase 5
+
+- Project memory: `Project_Report.md`.
+- Routing and methodology: `src/App.tsx`, `src/pages/AboutPage.tsx`.
+- Timeline content and validation: `src/data/timeline.json`, `src/data/timeline.ts`.
+- Timeline view and styling: `src/pages/StoryPage.tsx`, `src/styles/theme.css`.
+
+### Phase 5 per-file commits
+
+- `8b780c1` — `feat(story): route to the timeline` — `src/App.tsx`.
+- `86a6c07` — `docs(about): explain timeline methodology` — `src/pages/AboutPage.tsx`.
+- `3ae913b` — `feat(story): add sourced history entries` — `src/data/timeline.json`.
+- `d64df73` — `feat(story): validate timeline data` — `src/data/timeline.ts`.
+- `934087e` — `feat(story): build the history timeline` — `src/pages/StoryPage.tsx`.
+- `5d9e940` — `style(story): add responsive timeline layout` — `src/styles/theme.css`.
+- `Project_Report.md` is committed separately with the same one-file, file-specific commit convention. Phase 4's single commit was left intact because it already matches `origin/master`; the per-file convention begins with Phase 5.
