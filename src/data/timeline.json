@@ -1,0 +1,326 @@
+[
+  {
+    "id": "balfour-declaration",
+    "date": "1917-11-02",
+    "dateLabel": "2 November 1917",
+    "era": "1917–1947",
+    "title": "The Balfour Declaration",
+    "summary": "The British Government expressed support for establishing a national home for the Jewish people in Palestine.",
+    "detail": "The declaration also said that nothing should prejudice the civil and religious rights of existing non-Jewish communities in Palestine, or the rights and political status enjoyed by Jews in other countries.",
+    "sources": [
+      {
+        "label": "UN: History of the Question of Palestine",
+        "url": "https://www.un.org/unispal/history/"
+      }
+    ]
+  },
+  {
+    "id": "league-of-nations-mandate",
+    "date": "1922",
+    "dateLabel": "1922–1923",
+    "era": "1917–1947",
+    "title": "The Mandate for Palestine",
+    "summary": "The League of Nations approved a Mandate placing Palestine under British administration.",
+    "detail": "The Mandate incorporated provisions related to the Balfour Declaration. It took effect in 1923; British administration continued until 1947.",
+    "sources": [
+      {
+        "label": "UN: History of the Question of Palestine",
+        "url": "https://www.un.org/unispal/history/"
+      }
+    ]
+  },
+  {
+    "id": "palestinian-arab-revolt",
+    "date": "1936",
+    "dateLabel": "1936–1939",
+    "era": "1917–1947",
+    "title": "The Palestinian Arab revolt",
+    "summary": "A Palestinian Arab revolt against British rule and increased Jewish immigration lasted from 1936 to 1939.",
+    "detail": "The revolt included a general strike and armed resistance. British forces suppressed it; proposals for Palestine's future, including partition, continued to be debated.",
+    "sources": [
+      {
+        "label": "UN: History of the Question of Palestine",
+        "url": "https://www.un.org/unispal/history/"
+      }
+    ]
+  },
+  {
+    "id": "un-partition-plan",
+    "date": "1947-11-29",
+    "dateLabel": "29 November 1947",
+    "era": "1917–1947",
+    "title": "The UN partition recommendation",
+    "summary": "The General Assembly adopted Resolution 181 (II), recommending a plan for partition with economic union.",
+    "detail": "The plan recommended the creation of an Arab state and a Jewish state, with a special international regime for Jerusalem. It was a recommendation; it was not implemented as written.",
+    "sources": [
+      {
+        "label": "UN General Assembly Resolution 181 (II)",
+        "url": "https://www.un.org/unispal/document/auto-insert-185393/"
+      }
+    ]
+  },
+  {
+    "id": "war-and-displacement-1948",
+    "date": "1948",
+    "dateLabel": "1947–1949",
+    "era": "1948–1949",
+    "title": "War, displacement and the Nakba",
+    "summary": "War accompanied the end of the British Mandate and the establishment of Israel in May 1948. Mass displacement and dispossession of Palestinians became known as the Nakba, Arabic for “catastrophe.”",
+    "detail": "The war reshaped political control across the former Mandate and created a large Palestinian refugee population. Accounts of the causes and responsibility for displacement differ; the linked UN overview provides historical context and explains the term Nakba.",
+    "sources": [
+      {
+        "label": "UN: About the Nakba",
+        "url": "https://www.un.org/unispal/about-the-nakba/"
+      },
+      {
+        "label": "UN: History of the Question of Palestine",
+        "url": "https://www.un.org/unispal/history/"
+      }
+    ]
+  },
+  {
+    "id": "resolution-194",
+    "date": "1948-12-11",
+    "dateLabel": "11 December 1948",
+    "era": "1948–1949",
+    "title": "General Assembly Resolution 194",
+    "summary": "The General Assembly established a Conciliation Commission and addressed Jerusalem and Palestinian refugees.",
+    "detail": "Paragraph 11 states that refugees wishing to return to their homes and live at peace with their neighbours should be permitted to do so at the earliest practicable date, and that compensation should be paid. The resolution's interpretation and implementation remain disputed.",
+    "sources": [
+      {
+        "label": "UN General Assembly Resolution 194 (III)",
+        "url": "https://www.un.org/unispal/document/auto-insert-177019/"
+      }
+    ]
+  },
+  {
+    "id": "unrwa-created",
+    "date": "1949-12-08",
+    "dateLabel": "8 December 1949",
+    "era": "1948–1949",
+    "title": "UNRWA is established",
+    "summary": "The General Assembly adopted Resolution 302 (IV), establishing the United Nations Relief and Works Agency for Palestine Refugees in the Near East.",
+    "detail": "The resolution set out the Agency's relief and works mandate. UNRWA began operations in 1950.",
+    "sources": [
+      {
+        "label": "UN General Assembly Resolution 302 (IV)",
+        "url": "https://www.un.org/unispal/document/auto-insert-180266/"
+      }
+    ]
+  },
+  {
+    "id": "1967-war-resolution-242",
+    "date": "1967-11-22",
+    "dateLabel": "22 November 1967",
+    "era": "1967",
+    "title": "Security Council Resolution 242",
+    "summary": "After the June 1967 war, the Security Council adopted Resolution 242, setting out principles for a just and lasting peace.",
+    "detail": "The resolution addresses withdrawal of Israeli armed forces from territories occupied in the conflict, the termination of states of belligerency, secure and recognized boundaries, freedom of navigation, and a just settlement of the refugee problem.",
+    "sources": [
+      {
+        "label": "UN Security Council Resolution 242 (1967)",
+        "url": "https://www.un.org/unispal/document/auto-insert-184858/"
+      },
+      {
+        "label": "UN: History of the Question of Palestine",
+        "url": "https://www.un.org/unispal/history/"
+      }
+    ]
+  },
+  {
+    "id": "first-intifada",
+    "date": "1987-12",
+    "dateLabel": "December 1987",
+    "era": "1987–2000",
+    "title": "The First Intifada begins",
+    "summary": "A Palestinian uprising against Israeli occupation began in the Gaza Strip and spread to the West Bank, including East Jerusalem.",
+    "detail": "The uprising involved demonstrations, strikes, civil disobedience and violence. It continued until the early 1990s and formed part of the context for subsequent negotiations.",
+    "sources": [
+      {
+        "label": "UN historical timeline: Question of Palestine",
+        "url": "https://www.un.org/unispal/historical-timeline/"
+      },
+      {
+        "label": "UN: The Origins and Evolution of the Palestine Problem, 1989–2000",
+        "url": "https://www.un.org/unispal/document/auto-insert-209471/"
+      }
+    ]
+  },
+  {
+    "id": "oslo-declaration",
+    "date": "1993-09-13",
+    "dateLabel": "13 September 1993",
+    "era": "1987–2000",
+    "title": "The Oslo Declaration of Principles",
+    "summary": "Israel and the Palestine Liberation Organization signed the Declaration of Principles on Interim Self-Government Arrangements.",
+    "detail": "The agreement established interim self-government arrangements and a framework for negotiations on permanent-status issues. It did not settle those final issues.",
+    "sources": [
+      {
+        "label": "UN: Declaration of Principles on Interim Self-Government Arrangements",
+        "url": "https://www.un.org/unispal/document/auto-insert-180015/"
+      }
+    ]
+  },
+  {
+    "id": "camp-david-2000",
+    "date": "2000-07-11",
+    "dateLabel": "July 2000",
+    "era": "1987–2000",
+    "title": "Camp David summit ends without agreement",
+    "summary": "Israeli and Palestinian leaders met at Camp David to negotiate permanent-status issues, but the summit ended without an overall agreement.",
+    "detail": "The discussions addressed issues including borders, Jerusalem and Palestinian refugees. Negotiations continued after the summit.",
+    "sources": [
+      {
+        "label": "UN: The Origins and Evolution of the Palestine Problem, 1989–2000",
+        "url": "https://www.un.org/unispal/document/auto-insert-209471/"
+      }
+    ]
+  },
+  {
+    "id": "gaza-disengagement-2005",
+    "date": "2005-09-12",
+    "dateLabel": "September 2005",
+    "era": "2005–2012",
+    "title": "Israel completes its Gaza withdrawal",
+    "summary": "Israel completed the withdrawal of its forces from the Gaza Strip under its 2005 disengagement plan.",
+    "detail": "UN OCHA recorded the completion of the forces' withdrawal on 12 September. The plan also involved the removal of Israeli settlements from Gaza.",
+    "sources": [
+      {
+        "label": "UN OCHA: Gaza disengagement report, 12 September 2005",
+        "url": "https://www.un.org/unispal/document/auto-insert-203265/"
+      },
+      {
+        "label": "UN: History of the Question of Palestine",
+        "url": "https://www.un.org/unispal/history/"
+      }
+    ]
+  },
+  {
+    "id": "gaza-takeover-and-restrictions-2007",
+    "date": "2007-06",
+    "dateLabel": "June 2007 onward",
+    "era": "2005–2012",
+    "title": "Hamas takes control of Gaza; restrictions tighten",
+    "summary": "After Hamas took control of Gaza in June, Israel imposed extensive restrictions on movement and trade; Egypt also intermittently closed the Rafah crossing.",
+    "detail": "UN OCHA documented the restrictions and their humanitarian and economic effects, including limits on imports, exports and travel. This entry describes events and reporting; it does not resolve the legal debate over Gaza's status.",
+    "sources": [
+      {
+        "label": "UN OCHA: Locked in, humanitarian impact of two years of blockade",
+        "url": "https://www.un.org/unispal/document/auto-insert-200187/"
+      }
+    ]
+  },
+  {
+    "id": "palestine-observer-state-2012",
+    "date": "2012-11-29",
+    "dateLabel": "29 November 2012",
+    "era": "2005–2012",
+    "title": "Palestine receives UN non-member observer State status",
+    "summary": "The General Assembly adopted Resolution 67/19, according Palestine non-member observer State status at the United Nations.",
+    "detail": "The resolution changed Palestine's status in the General Assembly and other UN bodies; it did not by itself resolve questions about borders or the final political settlement.",
+    "sources": [
+      {
+        "label": "UN General Assembly Resolution 67/19",
+        "url": "https://www.un.org/unispal/document/auto-insert-187149/"
+      }
+    ]
+  },
+  {
+    "id": "october-2023-attacks-and-war",
+    "date": "2023-10-07",
+    "dateLabel": "7 October 2023 onward",
+    "era": "2023–present",
+    "title": "Attacks in Israel and war in Gaza",
+    "summary": "Hamas and other Palestinian armed groups attacked communities and military sites in southern Israel, killed civilians and took hostages. Israel began military operations in Gaza.",
+    "detail": "UN statements condemned attacks on civilians and called for hostages' release. The same UN record documents Israeli military operations and their severe effects on civilians in Gaza. Casualty figures change over time and are not included here.",
+    "sources": [
+      {
+        "label": "UN Secretary-General: remarks on the situation in the Middle East, 9 October 2023",
+        "url": "https://www.un.org/unispal/document/un-secretary-general-on-the-situation-in-the-middle-east-press-conference/"
+      },
+      {
+        "label": "UN: October 2023 monthly bulletin",
+        "url": "https://www.un.org/unispal/document/october-2023-monthly-bulletin/"
+      }
+    ]
+  },
+  {
+    "id": "security-council-resolution-2728",
+    "date": "2024-03-25",
+    "dateLabel": "25 March 2024",
+    "era": "2023–present",
+    "title": "Security Council demands a ceasefire for Ramadan",
+    "summary": "Security Council Resolution 2728 demanded an immediate ceasefire for the month of Ramadan, leading to a lasting, sustainable ceasefire.",
+    "detail": "The resolution also demanded the immediate and unconditional release of all hostages and called for expanded humanitarian assistance in Gaza.",
+    "sources": [
+      {
+        "label": "UN Security Council Resolution 2728 (2024)",
+        "url": "https://www.un.org/unispal/document/sc-adopted-resolution-2728-2024-demanding-for-an-immediate-ceasefire-during-the-month-of-ramadan-25mar24/"
+      }
+    ]
+  },
+  {
+    "id": "icj-advisory-opinion-2024",
+    "date": "2024-07-19",
+    "dateLabel": "19 July 2024",
+    "era": "2023–present",
+    "title": "The ICJ issues an advisory opinion",
+    "summary": "The International Court of Justice issued an advisory opinion on the legal consequences of Israel's policies and practices in the occupied Palestinian territory, including East Jerusalem.",
+    "detail": "The opinion followed a request from the General Assembly. Its findings are the Court's legal conclusions in that advisory proceeding; the full opinion sets out their scope and reasoning.",
+    "sources": [
+      {
+        "label": "International Court of Justice: Advisory Opinion of 19 July 2024",
+        "url": "https://www.icj-cij.org/index.php/node/204160"
+      }
+    ]
+  },
+  {
+    "id": "new-york-declaration-2025",
+    "date": "2025-09-12",
+    "dateLabel": "12 September 2025",
+    "era": "2023–present",
+    "title": "The General Assembly endorses the New York Declaration",
+    "summary": "The General Assembly endorsed the New York Declaration on the Peaceful Settlement of the Question of Palestine and the Implementation of the Two-State Solution.",
+    "detail": "The resolution was adopted by 142 votes in favour, 10 against and 12 abstentions. It set out proposed steps toward a peaceful settlement and a two-State solution.",
+    "sources": [
+      {
+        "label": "UN General Assembly meeting coverage, 12 September 2025",
+        "url": "https://www.un.org/unispal/document/ga-meeting-coverage-12sep25/"
+      }
+    ]
+  },
+  {
+    "id": "gaza-ceasefire-2025",
+    "date": "2025-10-10",
+    "dateLabel": "10 October 2025",
+    "era": "2023–present",
+    "title": "A Gaza ceasefire takes effect",
+    "summary": "A ceasefire agreement in Gaza took effect, pausing large-scale hostilities and beginning arrangements for hostage releases and increased humanitarian access.",
+    "detail": "UN reporting describes the ceasefire as a significant but fragile step. The agreement and its subsequent implementation are distinct events; conditions and compliance have continued to change.",
+    "sources": [
+      {
+        "label": "UN OCHA: report on the first month of the ceasefire, 11 December 2025",
+        "url": "https://www.un.org/unispal/document/ocha-report-11dec25/"
+      },
+      {
+        "label": "UN Special Coordinator: report to the Ad Hoc Liaison Committee, September 2026",
+        "url": "https://www.un.org/unispal/document/unsco-report-to-the-ad-hoc-liaison-committee-september-2026/"
+      }
+    ]
+  },
+  {
+    "id": "gaza-ceasefire-status-2026",
+    "date": "2026-09-24",
+    "dateLabel": "24 September 2026",
+    "era": "2023–present",
+    "title": "UN reports a fragile ceasefire and ongoing challenges",
+    "summary": "A September 2026 UN report said the ceasefire remained fragile, with strikes continuing and humanitarian and security challenges persisting.",
+    "detail": "The report also said transitional arrangements had been established but were not yet operating in Gaza. This entry reflects the report's publication date and is not a real-time account.",
+    "sources": [
+      {
+        "label": "UN Special Coordinator: report to the Ad Hoc Liaison Committee, 24 September 2026",
+        "url": "https://www.un.org/unispal/document/unsco-report-to-the-ad-hoc-liaison-committee-september-2026/"
+      }
+    ]
+  }
+]
