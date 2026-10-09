@@ -240,3 +240,12 @@ Phases 0, 1, 2, 3, 4, and 5 are complete (6 of 9 phases). Phase 5 delivered the 
 - `934087e` — `feat(story): build the history timeline` — `src/pages/StoryPage.tsx`.
 - `5d9e940` — `style(story): add responsive timeline layout` — `src/styles/theme.css`.
 - `Project_Report.md` is committed separately with the same one-file, file-specific commit convention. Phase 4's single commit was left intact because it already matches `origin/master`; the per-file convention begins with Phase 5.
+
+## Supabase cloud setup status
+
+- 2026-10-10: User installed the Supabase CLI as a project development dependency (`supabase@2.120.0`). `npx supabase --version` succeeds with `SUPABASE_TELEMETRY_DISABLED=1` in this sandbox. The CLI-generated `supabase/.temp/` cache is ignored by Git.
+- The CLI is not authenticated yet: `npx supabase projects list` returned `AccessTokenRequiredError`. The user must run `npx supabase login` locally and complete Supabase's browser sign-in; do not request or store the user's access token in chat.
+- No remote Supabase changes have been made. The hosted migration and 4,073-row data import remain pending, as do Vercel environment settings and a deployment check. After local authentication, link to project ref `ncdkujrjcrdarjijeteg`, preview the migration, then proceed with the approved cloud setup. Keep the database password local and never run `db reset --linked` against a production project.
+- The current server code expects `SUPABASE_SECRET_KEY`, which bypasses RLS. Before production configuration, review switching the read-only API client to the existing publishable key: the migration grants `anon` and `authenticated` read access under RLS and execute access to the read-only search RPC.
+- Files changed by CLI installation/setup: `.gitignore`, `package.json`, `package-lock.json`, and this report. Commit each file separately per the user's commit convention.
+- File-specific commits: `8f18b6f` (`package.json`), `73872ea` (`package-lock.json`), and `8a1c0ef` (`.gitignore`). This report receives its own separate commit.
