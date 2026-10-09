@@ -6,11 +6,11 @@ import { EmptyState } from '../components/EmptyState';
 import { ProfileSkeletonGrid } from '../components/ProfileSkeletonGrid';
 import { SearchBar } from '../components/SearchBar';
 import { MIN_SEARCH_CHARACTERS, SEARCH_DEBOUNCE_MS } from '../config/search';
-import { IS_DEMO_DATASET, accounts } from '../data/accounts';
+import { IS_DEMO_DATASET } from '../config/dataset';
 import { useAccountSearch } from '../hooks/useAccountSearch';
 import { useBlockedAccounts } from '../hooks/useBlockedAccounts';
 import { useDebouncedValue } from '../hooks/useDebouncedValue';
-import { normalizeSearchQuery } from '../lib/searchAccounts';
+import { normalizeSearchQuery } from '../lib/searchQuery';
 import { ACCOUNT_CATEGORIES, type AccountCategory } from '../types/account';
 
 export function SearchPage() {
@@ -164,6 +164,7 @@ export function SearchPage() {
 
       {!isQueryTooShort &&
         !accountSearch.isLoading &&
+        !accountSearch.hasError &&
         accountSearch.total === 0 && (
           <EmptyState
             title="No matching profiles"
@@ -172,10 +173,18 @@ export function SearchPage() {
           />
         )}
 
+      {accountSearch.hasError && (
+        <EmptyState
+          title="Search is unavailable"
+          description="Online search and the local directory could not be loaded. Check your connection and try again."
+          icon="⌕"
+        />
+      )}
+
       <p className="search-data-count">
         {accountSearch.usingLocalFallback
-          ? `Online search is unavailable. Using the bundled directory of ${accounts.length.toLocaleString()} profiles.`
-          : `${accounts.length.toLocaleString()} profiles currently available in this directory.`}
+          ? 'Online search is unavailable. Results are coming from the local directory.'
+          : 'Search is using the current directory.'}
       </p>
     </section>
   );
