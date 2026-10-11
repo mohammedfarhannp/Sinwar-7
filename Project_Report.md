@@ -1,6 +1,6 @@
 # Sinwar-7 Project Report
 
-Last updated: 2026-10-10
+Last updated: 2026-10-11
 
 ## Project objective
 
@@ -24,23 +24,23 @@ Build a static-first, accessible web application for searching a curated list of
 
 - Project URL supplied by the user: `https://ncdkujrjcrdarjijeteg.supabase.co`.
 - Publishable key supplied by the user: `sb_publishable_k7XPQYmn-paxXn2v58DJoA_4EGJK9Fb`.
-- The supplied names use `NEXT_PUBLIC_`; this project uses Vite, so the integration will read `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY` from the environment.
+- The supplied variable names use `NEXT_PUBLIC_`. The current app does not connect to Supabase from the browser: Vercel API functions read `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` from server runtime settings so that the read-only routes use the database's `anon` grants and RLS policies. A future browser client would use Vite's `VITE_` prefix for its publishable key.
 - This is a publishable key, not a service-role key. Never put a service-role key in client code or this report.
 - `@supabase/supabase-js` and `@supabase/ssr` were installed in Phase 4 as requested. The server routes use `@supabase/supabase-js`; no browser session/auth flow exists yet, so `@supabase/ssr` is not imported by the app.
 
 ## Phase plan
 
-| Phase | Scope                                                                | Status      |
-| ----- | -------------------------------------------------------------------- | ----------- |
-| 0     | Vite/React/TypeScript scaffold, theme, app shell, route placeholders | Complete    |
-| 1     | Responsive shell polish and navigation behavior                      | Complete    |
-| 2     | Static search, profile cards, personal blocked list                  | Complete    |
-| 3     | Account data pipeline, validation, cleaning report                   | Complete    |
-| 4     | Supabase schema/SQL migrations and secure server-side search         | Complete    |
-| 5     | Educational story and timeline                                       | Complete    |
-| 6     | Feature-gated Donate and Stores & Apps sections                      | Complete    |
-| 7     | Performance, SEO, and PWA                                            | Complete    |
-| 8     | Tests, CI/CD, launch documentation                                   | Not started |
+| Phase | Scope                                                                | Status   |
+| ----- | -------------------------------------------------------------------- | -------- |
+| 0     | Vite/React/TypeScript scaffold, theme, app shell, route placeholders | Complete |
+| 1     | Responsive shell polish and navigation behavior                      | Complete |
+| 2     | Static search, profile cards, personal blocked list                  | Complete |
+| 3     | Account data pipeline, validation, cleaning report                   | Complete |
+| 4     | Supabase schema/SQL migrations and secure server-side search         | Complete |
+| 5     | Educational story and timeline                                       | Complete |
+| 6     | Feature-gated Donate and Stores & Apps sections                      | Complete |
+| 7     | Performance, SEO, and PWA                                            | Complete |
+| 8     | Tests, CI/CD, launch documentation                                   | Complete |
 
 ## Phase 0 plan
 
@@ -171,7 +171,7 @@ Build a static-first, accessible web application for searching a curated list of
 
 ## Current completion and next step
 
-Phases 0 through 7 are complete (8 of 9 phases). Phase 5 delivered the sourced historical timeline at `/story`, filterable by period, plus the methodology note on `/about`. Phase 6 added independently gated Donate and Stores & Apps sections. Phase 7 added lazy route loading, SEO metadata and crawl endpoints, and an offline-capable app shell. Stop here for user review before starting Phase 8.
+Phases 0 through 8 are complete (9 of 9 planned phases). Phase 5 delivered the sourced historical timeline at `/story`, filterable by period, plus the methodology note on `/about`. Phase 6 added independently gated Donate and Stores & Apps sections. Phase 7 added lazy route loading, SEO metadata and crawl endpoints, and an offline-capable app shell. Phase 8 added API/configuration tests, GitHub Actions CI, and Vercel launch documentation. Stop here for user review. Vercel environment/domain configuration, GitHub branch protection, and a live deployment smoke check remain external launch steps.
 
 ## Phase 4 plan
 
@@ -343,6 +343,41 @@ Phases 0 through 7 are complete (8 of 9 phases). Phase 5 delivered the sourced h
 - 2026-10-10: User installed the Supabase CLI as a project development dependency (`supabase@2.120.0`). `npx supabase --version` succeeds with `SUPABASE_TELEMETRY_DISABLED=1` in this sandbox. The CLI-generated `supabase/.temp/` cache is ignored by Git.
 - The local CLI session is linked to project ref `ncdkujrjcrdarjijeteg`; its link metadata is in the Git-ignored `supabase/.temp/` cache. Authentication tokens and database passwords are not recorded in this report or repository.
 - 2026-10-10: After user approval, `npx supabase db push --linked --include-seed --yes` applied `20261009183000_create_accounts.sql` and loaded `supabase/seed.sql`. Read-only verification confirmed migration `20261009183000` is applied and `public.accounts` contains 4,073 rows. The hosted schema and account data are set up. Vercel environment settings and a deployment check remain pending. Keep the database password local and never run `db reset --linked` against a production project.
-- The current server code expects `SUPABASE_SECRET_KEY`, which bypasses RLS. Before production configuration, review switching the read-only API client to the existing publishable key: the migration grants `anon` and `authenticated` read access under RLS and execute access to the read-only search RPC.
 - Files changed by CLI installation/setup: `.gitignore`, `package.json`, `package-lock.json`, and this report. Commit each file separately per the user's commit convention.
 - File-specific commits: `8f18b6f` (`package.json`), `73872ea` (`package-lock.json`), and `8a1c0ef` (`.gitignore`). This report receives its own separate commit.
+
+## Phase 8 plan
+
+1. Review the deployed schema grants and policies. Since the API only reads rows and invokes the read-only search RPC, use the publishable key for its server-side Supabase client so normal RLS applies; remove the unnecessary secret-key requirement.
+2. Add focused Vitest coverage for search/account API validation, response mapping and headers, generic upstream/configuration errors, and rate limiting. Keep Supabase mocked so tests need no hosted credentials or network access.
+3. Add GitHub Actions CI for pushes and pull requests to `master`, using the supported Node runtime, `npm ci`, lint, typecheck, unit tests, formatting, and the full data-validated production build. Grant the workflow read-only repository permissions and do not add deployment secrets or deploy from CI.
+4. Add a launch guide covering Vercel Git integration, the production branch and domain, server environment variables, feature flags, security boundaries, and post-deploy smoke checks. Update `.env.example` and `SECURITY.md` to match the least-privilege publishable-key configuration.
+5. Run and record the full quality gate, verify generated-data files are not inadvertently changed, list all Phase 8 files and per-file Conventional Commits, update this report, and stop for review. Do not configure external Vercel settings or deploy from this workspace.
+6. Commit each changed file separately with a file-specific Conventional Commit subject and a second `-m` description, then commit the report separately.
+
+### Phase 8 execution log
+
+- 2026-10-11: User authorized continuing to Phase 8. The worktree was clean; the Phase 8 plan was recorded before implementation.
+- The migration grants `anon` and `authenticated` select access guarded by an RLS read policy and execute access to the `SECURITY INVOKER` search RPC. Current Supabase guidance distinguishes publishable keys, which use these RLS permissions, from secret keys that bypass RLS. The existing Vercel environment is not configured, so this is the right point to remove the secret-key dependency before launch.
+- Added mocked API/configuration tests, read-only GitHub Actions CI, and a Vercel launch guide. `npm run test` passed 7 files and 19 tests; lint, typecheck, formatting, diff checks, and the full data-validated production build also passed on Node 24.18.0. The build validated 4,073 accounts from 4,074 source rows and preserved source SHA-256 `b4c81d56abfe1e363c6497170a94f170ba793959ba91a7884ff92061b56d3b83`. It generated only new timestamps in two tracked reports; those timestamp-only changes were reverted. No deployment or Vercel settings were changed.
+- CI runs on pushes and pull requests targeting `master`, uses Node 24 with read-only repository permissions, and runs install, lint, typecheck, tests, formatting, and the complete build. Vercel Git integration is documented for Preview and Production deployments; GitHub Actions has no deployment credentials.
+
+### Files added or changed in Phase 8
+
+- API and Supabase coverage/configuration: `api/account/[username].test.ts`, `api/search.test.ts`, `server/http.test.ts`, `server/supabase.test.ts`, `server/supabase.ts`, `vitest.config.ts`.
+- CI and launch/security documentation: `.github/workflows/ci.yml`, `README.md`, `SECURITY.md`, `.env.example`.
+- Project memory: `Project_Report.md`.
+
+### Phase 8 per-file commits
+
+- `b1f3c94` — `chore(env): use RLS-scoped Supabase key` — `.env.example`.
+- `9b2a646` — `docs(security): document least-privilege API access` — `SECURITY.md`.
+- `50fad03` — `docs(launch): add Vercel launch guide` — `README.md`.
+- `d75a590` — `ci(github): add quality workflow` — `.github/workflows/ci.yml`.
+- `10c48ae` — `security(supabase): use publishable key for API client` — `server/supabase.ts`.
+- `8a81fb0` — `test(vitest): include API suites in thread pool` — `vitest.config.ts`.
+- `72e9c49` — `test(api): cover response headers and rate limits` — `server/http.test.ts`.
+- `6b017a6` — `test(supabase): verify RLS-scoped client config` — `server/supabase.test.ts`.
+- `6893fc4` — `test(api): cover search route behavior` — `api/search.test.ts`.
+- `b9c397e` — `test(api): cover account lookup route` — `api/account/[username].test.ts`.
+- The project report is committed separately using the same one-file convention.
