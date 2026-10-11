@@ -3,16 +3,16 @@
 ## Data access
 
 - The browser calls only the same-origin `/api/search` and `/api/account/:username` routes. It does not create a Supabase client or query Supabase directly.
-- Vercel Functions use `SUPABASE_URL` and `SUPABASE_SECRET_KEY`. A legacy `SUPABASE_SERVICE_ROLE_KEY` is also accepted. Set one server key in Vercel project environment settings for Production and Preview as needed.
-- Secret/service-role values bypass row-level security. Keep them in server environment settings only. Never add a `VITE_` or `NEXT_PUBLIC_` prefix, commit a real `.env` file, put the key in client code, or share it in screenshots/logs. If exposed, rotate it in the Supabase dashboard.
-- The Supabase publishable key is intentionally not used by the current server-only integration. `@supabase/ssr` is installed as requested but this phase has no browser session or authentication flow that needs cookie-aware SSR.
+- Vercel Functions use `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. The API only performs public reads; the database's `anon` grants and RLS policies apply to this key. Set both variables in the Vercel project's Production and Preview environments.
+- Publishable keys are designed for public components and do not bypass RLS. Keep the key in Vercel/local environment configuration for this server-only integration, and never substitute a secret/service-role key: elevated keys bypass the policies that limit this API to reads. Never commit a real `.env` file or include an elevated key in client code or build variables. If an elevated key is exposed, rotate it in the Supabase dashboard.
+- `@supabase/ssr` is installed as requested but the app has no browser session or authentication flow that needs cookie-aware SSR.
 - `public.accounts` has RLS enabled. `anon` and `authenticated` may select rows but have no insert, update, or delete grants or policies. The search RPC is `SECURITY INVOKER`, validates its arguments, and has execute permission only for the intended API roles. API routes only issue reads.
 - Account data is public directory content by design. Do not place private user data in this table.
 
 ## Environment setup
 
-1. Copy `.env.example` to `.env.local` for local function development, then set the project's Supabase URL and a server secret key. `.env*` files are ignored by Git except `.env.example`.
-2. Set the same server variables in the Vercel project's Environment Variables page. They are read only by server functions and are not exposed as Vite build variables.
+1. Copy `.env.example` to `.env.local` for local function development, then set the project's Supabase URL and publishable key. `.env*` files are ignored by Git except `.env.example`.
+2. Set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` in the Vercel project's Production and Preview environment settings. Keep secrets such as database passwords out of these values and out of Vite `VITE_` variables.
 3. Apply `supabase/migrations/20261009183000_create_accounts.sql` before deploying the API. Load `supabase/seed.sql` to seed accounts. The seed file is generated from the validated JSON source by `npm run db:seed:build`; `npm run build` regenerates it after rebuilding and validating the source list.
 4. `npm run dev` starts Vite only, so calls to `/api/*` fall back to the local Fuse search during ordinary frontend development. To run the Vercel Functions locally, install/use the Vercel CLI and run `vercel dev` with the server environment variables available.
 
