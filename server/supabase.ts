@@ -21,13 +21,13 @@ export function getServerSupabaseClient(): SupabaseClient<Database> {
 
   const env = (globalThis as RuntimeGlobal).process?.env;
   const supabaseUrl = env?.SUPABASE_URL;
-  const secretKey = env?.SUPABASE_SECRET_KEY ?? env?.SUPABASE_SERVICE_ROLE_KEY;
+  const publishableKey = env?.SUPABASE_PUBLISHABLE_KEY;
 
-  if (!supabaseUrl || !secretKey) {
+  if (!supabaseUrl || !publishableKey) {
     throw new SupabaseConfigurationError();
   }
 
-  cachedClient = createClient<Database>(supabaseUrl, secretKey, {
+  cachedClient = createClient<Database>(supabaseUrl, publishableKey, {
     auth: {
       autoRefreshToken: false,
       detectSessionInUrl: false,
