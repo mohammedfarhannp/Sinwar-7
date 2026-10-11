@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     environment: 'node',
-    include: ['src/**/*.test.ts'],
+    pool: 'threads',
+    include: ['src/**/*.test.ts', 'api/**/*.test.ts', 'server/**/*.test.ts'],
   },
 });
