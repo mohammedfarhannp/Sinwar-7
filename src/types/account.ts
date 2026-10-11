@@ -1,5 +1,8 @@
 import { z } from 'zod';
 
+const AVATAR_URL_PATTERN =
+  /^\/avatars\/[a-zA-Z0-9._/-]+\.webp$|^https:\/\/[a-z0-9-]+\.supabase\.co\/storage\/v1\/object\/public\/avatars\/[a-zA-Z0-9._-]+\.webp$/i;
+
 export const ACCOUNT_CATEGORIES = [
   'entertainer',
   'athlete',
@@ -16,10 +19,7 @@ export const accountSchema = z
     username: z.string().regex(/^[a-zA-Z0-9._]+$/),
     displayName: z.string().nullable(),
     category: z.enum(ACCOUNT_CATEGORIES),
-    avatarUrl: z
-      .string()
-      .regex(/^\/avatars\/[a-zA-Z0-9._/-]+\.webp$/)
-      .nullable(),
+    avatarUrl: z.string().regex(AVATAR_URL_PATTERN).nullable(),
     avatarFallback: z.string(),
     verifiedGuess: z.boolean(),
     tags: z.array(z.string().min(1)),

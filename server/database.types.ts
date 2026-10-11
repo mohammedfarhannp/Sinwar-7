@@ -14,6 +14,10 @@ export type AccountRow = {
   display_name: string | null;
   category: AccountCategory;
   avatar_url: string | null;
+  avatar_status: 'pending' | 'fetched' | 'failed' | 'skipped';
+  avatar_attempts: number;
+  avatar_last_attempt_at: string | null;
+  avatar_error: string | null;
   avatar_fallback: string;
   verified_guess: boolean;
   tags: string[];

@@ -29,7 +29,7 @@ npm run build
 
 1. Import this Git repository into Vercel and keep Git integration enabled. Pull requests receive Preview deployments; pushes to the configured Production Branch deploy production. The repository's current production branch is `master`.
 2. Use Vite as the framework preset and the default `npm run build` command. Vercel serves the generated `dist` directory.
-3. In the Vercel project's Environment Variables settings, set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` for Production and Preview. The API uses the publishable key with the database's `anon` grants and RLS policies; do not configure a Supabase secret or service-role key for this read-only API.
+3. In the Vercel project's Environment Variables settings, set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` for Production and Preview. The search and account APIs use the publishable key with the database's `anon` grants and RLS policies. To enable the avatar pipeline, also set `SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET`, and `ADMIN_SECRET` as server-only variables; never add a `VITE_` prefix. See [the avatar pipeline guide](docs/avatar-pipeline.md).
 4. Optional Vite flags default to false when unset: `VITE_ENABLE_DONATE` and `VITE_ENABLE_STORES_APPS`. Enable a section only after its destinations and content have been reviewed.
 5. Add the production domain in Vercel, set the intended Production Branch to `master`, and redeploy after environment or domain changes. The app derives canonical metadata, sitemap entries, and robots directives from the active request host.
 6. Review the Preview deployment before merging to `master`. After the Production deployment, run the smoke checks below and record the final domain and deployment date with the project maintainer.
@@ -47,3 +47,14 @@ Vercel's Git integration handles Preview and Production deployments. GitHub Acti
 - Confirm the loaded document and built client assets contain no Supabase elevated keys. Confirm the Vercel Production and Preview variables contain only the URL and publishable key required by this API.
 
 See [SECURITY.md](SECURITY.md) for database grants, API protections, and environment handling. CI runs lint, typecheck, unit tests, formatting, and the full data-validated production build on pushes and pull requests targeting `master`.
+
+## Avatar enrichment
+
+The scheduled worker processes a small batch every six hours. For an admin dry run, set `ADMIN_SECRET` in your shell and use:
+
+```sh
+curl -X POST "$SINWAR_BASE_URL/api/admin/enrich-avatars?dryRun=1" \
+  -H "x-admin-secret: $ADMIN_SECRET"
+```
+
+To process a batch, use the same command without `?dryRun=1` and send `-H "content-type: application/json" -d '{"batchSize":3}'`. The endpoint caps batches at 10 and never returns or logs secrets.

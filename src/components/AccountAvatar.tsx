@@ -19,19 +19,33 @@ function getInitials(account: Account): string {
 }
 
 export function AccountAvatar({ account, size = 'card' }: AccountAvatarProps) {
-  const [imageFailed, setImageFailed] = useState(false);
+  const [failedImageUrls, setFailedImageUrls] = useState<Set<string>>(
+    () => new Set(),
+  );
+  const remoteAvatarUrl = `https://unavatar.io/instagram/${encodeURIComponent(account.username)}?fallback=false`;
   const avatarUrl = account.avatarUrl;
+  const imageUrl =
+    (avatarUrl && !failedImageUrls.has(avatarUrl) && avatarUrl) ||
+    (!failedImageUrls.has(remoteAvatarUrl) && remoteAvatarUrl) ||
+    null;
 
   return (
     <span className={`avatar-ring avatar-ring-${size}`} aria-hidden="true">
       <span className="account-avatar">
-        {avatarUrl && !imageFailed ? (
+        {imageUrl ? (
           <img
-            src={avatarUrl}
+            src={imageUrl}
             alt=""
             loading="lazy"
             decoding="async"
-            onError={() => setImageFailed(true)}
+            referrerPolicy="no-referrer"
+            onError={() =>
+              setFailedImageUrls((previous) => {
+                const next = new Set(previous);
+                next.add(imageUrl);
+                return next;
+              })
+            }
           />
         ) : (
           <span className="avatar-initials">{getInitials(account)}</span>
