@@ -8,7 +8,7 @@ interface PlaceholderPageProps {
 export function PlaceholderPage({ title, description }: PlaceholderPageProps) {
   return (
     <section className="content-page" aria-labelledby="placeholder-title">
-      <p className="eyebrow">Sinwar-7</p>
+      <p className="eyebrow">Operation Blockout</p>
       <h1 id="placeholder-title">{title}</h1>
       <EmptyState
         icon="◌"
