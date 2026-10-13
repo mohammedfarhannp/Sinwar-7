@@ -1,4 +1,5 @@
 import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 import { features } from '../config/features';
 
@@ -17,7 +18,10 @@ export function NavigationPanel({ onNavigate }: NavigationPanelProps) {
 
   return (
     <div className="navigation-content">
-      <p className="navigation-label">Explore</p>
+      <Link className="navigation-brand" to="/" onClick={onNavigate}>
+        <Logo size={26} />
+      </Link>
+      <p className="navigation-label">Join the blockout</p>
       <nav aria-label="Main navigation" className="navigation-links">
         <NavLink
           to="/"
@@ -43,7 +47,7 @@ export function NavigationPanel({ onNavigate }: NavigationPanelProps) {
           onClick={onNavigate}
         >
           <span aria-hidden="true">✓</span>
-          <span>Blocked list</span>
+          <span>Blockout list</span>
         </NavLink>
         <NavLink
           to="/story"
