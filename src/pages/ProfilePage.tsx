@@ -39,7 +39,8 @@ export function ProfilePage() {
         <p className="eyebrow">Profile</p>
         <h1 id="profile-loading-title">Loading profile details</h1>
         <p role="status" aria-live="polite">
-          Looking up this account in the directory…
+          Checking the directory entry. Review this account’s statements before
+          you decide what to do.
         </p>
       </section>
     );
@@ -123,7 +124,7 @@ export function ProfilePage() {
             }
             aria-pressed={isBlocked}
           >
-            {isBlocked ? 'Remove from my block list' : 'Add to my block list'}
+            {isBlocked ? 'Remove from Blockout list' : 'Add to Blockout list'}
           </button>
           <button
             type="button"
@@ -140,12 +141,12 @@ export function ProfilePage() {
       </article>
       {blocked.storageError && (
         <p className="storage-error" role="alert">
-          Your list could not be saved in this browser. Check its local storage
-          settings and try again.
+          Your Blockout list could not be saved in this browser. Check its local
+          storage settings and try again.
         </p>
       )}
       <Link className="text-link profile-back-link" to="/search">
-        Back to search
+        Back to the directory
       </Link>
     </section>
   );
