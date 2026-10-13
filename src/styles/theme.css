@@ -116,7 +116,6 @@ a {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
   color: var(--text);
   font-size: 1rem;
   font-weight: 750;
@@ -124,17 +123,23 @@ a {
   text-decoration: none;
 }
 
-.brand-mark {
-  display: grid;
-  width: 34px;
-  height: 34px;
-  place-items: center;
-  border-radius: 11px;
-  background: var(--primary);
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 800;
-  letter-spacing: -0.04em;
+.logo-lockup {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 10px;
+  color: var(--accent);
+}
+
+.logo-mark {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.logo-wordmark {
+  color: var(--text);
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 .header-actions {
@@ -210,6 +215,22 @@ a {
   padding: 12px;
 }
 
+.navigation-brand {
+  display: flex;
+  margin: 4px 8px 20px;
+  text-decoration: none;
+}
+
+.navigation-brand .logo-lockup {
+  gap: 8px;
+}
+
+.navigation-brand .logo-wordmark {
+  font-size: 0.88rem;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+
 .navigation-label {
   margin: 12px 10px 8px;
   color: var(--text-muted);
@@ -278,7 +299,7 @@ a {
 .site-footer-inner {
   display: grid;
   width: min(100% - 32px, 1440px);
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: 1fr;
   align-items: start;
   gap: 8px 24px;
   margin-inline: auto;
@@ -291,6 +312,29 @@ a {
   font-weight: 650;
   text-decoration-thickness: 1px;
   text-underline-offset: 3px;
+}
+
+.site-footer .footer-brand {
+  width: fit-content;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.footer-brand-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.footer-brand .logo-lockup {
+  gap: 8px;
+}
+
+.site-footer .footer-brand .logo-wordmark {
+  font-size: 0.9rem;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+  color: var(--text);
 }
 
 .site-footer p,
@@ -1082,7 +1126,7 @@ kbd {
   }
 
   .site-footer-inner {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
     align-items: center;
   }
 
@@ -1123,6 +1167,20 @@ kbd {
 
   .site-header-inner {
     min-height: 62px;
+  }
+
+  .brand .logo-lockup {
+    gap: 8px;
+  }
+
+  .brand .logo-mark {
+    width: 28px;
+    height: 28px;
+  }
+
+  .brand .logo-wordmark {
+    font-size: 0.86rem;
+    letter-spacing: -0.04em;
   }
 
   .menu-button {
