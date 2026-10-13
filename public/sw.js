@@ -1,5 +1,14 @@
-const CACHE_NAME = 'sinwar7-static-v1';
-const PRECACHE_URLS = ['/manifest.webmanifest', '/icon.svg', '/theme-init.js'];
+const CACHE_NAME = 'operation-blockout-static-v1';
+const PRECACHE_URLS = [
+  '/manifest.webmanifest',
+  '/favicon.svg',
+  '/favicon.ico',
+  '/icon.svg',
+  '/icon-192.png',
+  '/icon-512.png',
+  '/apple-touch-icon.png',
+  '/theme-init.js',
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -43,7 +52,12 @@ self.addEventListener('activate', (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((key) => key.startsWith('sinwar7-') && key !== CACHE_NAME)
+            .filter(
+              (key) =>
+                (key.startsWith('sinwar7-') ||
+                  key.startsWith('operation-blockout-')) &&
+                key !== CACHE_NAME,
+            )
             .map((key) => caches.delete(key)),
         ),
       )
