@@ -25,8 +25,7 @@ export class RouteErrorBoundary extends Component<
           <p className="eyebrow">Something went wrong</p>
           <h1>We couldn’t load this page.</h1>
           <p className="page-description">
-            Try reloading the page. Your personal checklist stays on this
-            device.
+            Try reloading the page. Your Blockout list stays on this device.
           </p>
           <button
             className="primary-button"
