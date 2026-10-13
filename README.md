@@ -1,6 +1,6 @@
-# Sinwar-7
+# Operation Blockout
 
-A static-first directory for searching a curated list of public Instagram accounts. Search and account details use same-origin Vercel API routes backed by Supabase; if an API request is unavailable, the app falls back to its validated static dataset. The personal blocked-account checklist stays in the user's browser storage.
+A community-led boycott directory for people choosing to withdraw follows, views, and spending from celebrities they believe have stayed silent about the genocide in Gaza. Search and account details use same-origin Vercel API routes backed by Supabase; if an API request is unavailable, the app falls back to its validated static dataset. The private Blockout list stays in the user's browser. Directory entries are usernames, not evidence of any individual's public statements or position; check the account's public record before deciding what to do.
 
 ## Local development
 
@@ -22,6 +22,8 @@ npm run test
 npm run format:check
 npm run build
 ```
+
+Regenerate the red triangle browser and installable-app icons with `npm run brand:icons`.
 
 `npm run build` rebuilds and validates the source account list, regenerates the Supabase seed, typechecks, then creates the production Vite output.
 
