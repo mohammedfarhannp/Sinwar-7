@@ -1,5 +1,6 @@
 import type { RefObject } from 'react';
 import { Link } from 'react-router-dom';
+import { Logo } from './Logo';
 import { ThemeToggle } from './ThemeToggle';
 
 interface SiteHeaderProps {
@@ -27,14 +28,13 @@ export function SiteHeader({
         >
           <span aria-hidden="true">☰</span>
         </button>
-        <Link className="brand" to="/" aria-label="Sinwar-7 home">
-          <span className="brand-mark" aria-hidden="true">
-            S7
-          </span>
-          <span>Sinwar-7</span>
+        <Link className="brand" to="/">
+          <Logo />
         </Link>
         <div className="header-actions">
-          <span className="header-note">A personal checklist</span>
+          <span className="header-note">
+            Boycott silence. Reclaim attention.
+          </span>
           <ThemeToggle />
         </div>
       </div>
