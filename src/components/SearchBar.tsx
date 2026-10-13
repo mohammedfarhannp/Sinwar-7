@@ -27,7 +27,7 @@ export function SearchBar({
       role="search"
     >
       <label className="sr-only" htmlFor="account-search">
-        Search by username
+        Search Instagram usernames
       </label>
       <span className="search-icon" aria-hidden="true">
         ⌕
@@ -39,7 +39,7 @@ export function SearchBar({
         value={query}
         onChange={(event) => onQueryChange(event.target.value)}
         onKeyDown={handleKeyDown}
-        placeholder="Search an @username"
+        placeholder="Search an Instagram username"
         autoComplete="off"
         aria-keyshortcuts="Control+K Meta+K"
       />
