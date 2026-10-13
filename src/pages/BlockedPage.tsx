@@ -51,11 +51,12 @@ export function BlockedPage() {
       className="content-page blocked-page"
       aria-labelledby="blocked-title"
     >
-      <p className="eyebrow">Your personal checklist</p>
-      <h1 id="blocked-title">Your block list</h1>
+      <p className="eyebrow">Keep your choice visible</p>
+      <h1 id="blocked-title">Your Blockout list</h1>
       <p className="page-description">
-        This list is saved only in this browser. Adding an account here does not
-        block it on Instagram.
+        This personal record is saved only in this browser. Adding an account
+        here does not unfollow, block, report, or contact it on Instagram; use
+        Instagram’s controls to take those actions.
       </p>
       <DatasetNotice />
 
@@ -68,20 +69,20 @@ export function BlockedPage() {
           ? `Checking ${blocked.usernames.length.toLocaleString()} saved names against the directory…`
           : hasDirectoryError
             ? `${blocked.usernames.length.toLocaleString()} saved names are on this device; the directory could not be loaded.`
-            : `You’ve added ${knownBlocked.length} / ${directory.length} profiles from the current directory to your list.`}
+            : `You’ve added ${knownBlocked.length} / ${directory.length} profiles from the current directory to your Blockout list.`}
       </p>
 
       {blocked.storageError && (
         <p className="storage-error" role="alert">
-          Your list could not be saved in this browser. Check its local storage
-          settings and try again.
+          Your Blockout list could not be saved in this browser. Check its local
+          storage settings and try again.
         </p>
       )}
 
       {blocked.usernames.length === 0 ? (
         <EmptyState
-          title="Your list is empty"
-          description="When you add a profile to your list, it will appear here."
+          title="Your Blockout list is empty"
+          description="Find an account, review its public statements, and add it here if you choose."
           icon="✓"
         />
       ) : isLoadingDirectory ? (
@@ -148,7 +149,7 @@ export function BlockedPage() {
                         className="secondary-button"
                         onClick={() => blocked.removeBlocked(username)}
                       >
-                        Remove from my list
+                        Remove from Blockout list
                       </button>
                     </li>
                   ),
