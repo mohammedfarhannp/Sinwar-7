@@ -486,3 +486,29 @@ At this boundary, Change 1 was ready for review. Change 2 and Change 3 were unst
 ### Review boundary
 
 Change 2 is complete. Stop here for review. Change 3 remains unstarted; ask the user to choose Option A, B, or C before implementing category changes.
+
+## Palestinian Story — media sourcing update
+
+### Scope
+
+1. Replace UN-hosted citations in the Palestinian Story timeline with event-relevant reporting from established international news organizations.
+2. Keep a direct ICJ opinion link for the legal-ruling entry and pair it with newsroom coverage.
+3. Update the About-page timeline methodology and ensure the latest ceasefire entry matches the date and claims in its replacement source.
+
+### Execution and checks
+
+- 2026-10-13: Replaced UN-hosted timeline source links with reporting from AP News, BBC News, Reuters, The Guardian, and Le Monde. Every entry now has a media report; the ICJ advisory-opinion entry also retains the Court's own opinion as the primary legal record. The timeline contains no UN-hosted source URLs.
+- Updated the About-page methodology to explain that event summaries link to international news reporting and legal findings remain attributed to the issuing court.
+- Updated the latest ceasefire status entry from 24 September to 10 October 2026 to match AP's first-anniversary reporting; revised its title and summary to reflect that coverage of continuing strikes and stalled reconstruction.
+- Checks passed: `npm run lint`, `npm run typecheck`, `npm run format:check`, `npm run build`, and `git diff --check`. The build validated all 4,073 directory records. Automated tests were not run for this content-only source update.
+- The build refreshed timestamps in `data/reports/account-count-baseline.json` and `data/reports/cleaning-report.json`; those generated-only changes were reverted.
+
+### Files changed and one-file commits
+
+- `src/data/timeline.json` — `032d04c` (`content(story): source timeline from international media`).
+- `src/pages/AboutPage.tsx` — `3651456` (`docs(about): update timeline sourcing methodology`).
+- This report receives its own final documentation commit.
+
+### Review boundary
+
+The Palestinian Story source update is complete. The existing Change 3 category decision remains pending; this source update did not alter directory categories.
