@@ -18,6 +18,7 @@
     "avatars:dry-run": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/enrich-avatars.mjs --dry-run",
     "avatars:batch": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/enrich-avatars.mjs",
     "avatars:day": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/enrich-avatars.mjs --all-for-day",
+    "brand:icons": "node scripts/build-brand-icons.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
