@@ -12,8 +12,9 @@ export function DatasetNotice() {
 
   return (
     <p className="dataset-notice" role="note">
-      This directory contains usernames only. Display names, categories, and
-      verification details were not provided or inferred.
+      This directory contains usernames only. It does not provide sources
+      verifying anyone’s statements, silence, or position. A listing is not
+      proof of a stance; check the account’s public statements yourself.
     </p>
   );
 }
