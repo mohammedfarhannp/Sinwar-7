@@ -60,11 +60,12 @@ export function SearchPage() {
       className="content-page search-page"
       aria-labelledby="search-title"
     >
-      <p className="eyebrow">Search the directory</p>
-      <h1 id="search-title">Find a profile</h1>
+      <p className="eyebrow">Operation Blockout · Search</p>
+      <h1 id="search-title">Find the account. Check the silence.</h1>
       <p className="page-description">
-        Search by username, then use category filters to narrow the list. Review
-        each profile and decide for yourself what to do.
+        Search by username and narrow the directory with category filters. The
+        list does not document anyone’s statements; review the account’s own
+        words before deciding whether to boycott or block.
       </p>
       <SearchBar
         compact
@@ -125,8 +126,8 @@ export function SearchPage() {
 
       {blocked.storageError && (
         <p className="storage-error" role="alert">
-          Your list could not be saved in this browser. Check its local storage
-          settings and try again.
+          Your Blockout list could not be saved in this browser. Check its local
+          storage settings and try again.
         </p>
       )}
 
