@@ -29,7 +29,7 @@ npm run build
 
 1. Import this Git repository into Vercel and keep Git integration enabled. Pull requests receive Preview deployments; pushes to the configured Production Branch deploy production. The repository's current production branch is `master`.
 2. Use Vite as the framework preset and the default `npm run build` command. Vercel serves the generated `dist` directory.
-3. In the Vercel project's Environment Variables settings, set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` for Production and Preview. The search and account APIs use the publishable key with the database's `anon` grants and RLS policies. To enable the avatar pipeline, also set `SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET`, and `ADMIN_SECRET` as server-only variables; never add a `VITE_` prefix. See [the avatar pipeline guide](docs/avatar-pipeline.md).
+3. In the Vercel project's Environment Variables settings, set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` for Production and Preview. The search and account APIs use the publishable key with the database's `anon` grants and RLS policies. Keep the avatar pipeline's service-role key on the local computer only; never add it to Vercel or a `VITE_` variable. See [the avatar pipeline guide](docs/avatar-pipeline.md).
 4. Optional Vite flags default to false when unset: `VITE_ENABLE_DONATE` and `VITE_ENABLE_STORES_APPS`. Enable a section only after its destinations and content have been reviewed.
 5. Add the production domain in Vercel, set the intended Production Branch to `master`, and redeploy after environment or domain changes. The app derives canonical metadata, sitemap entries, and robots directives from the active request host.
 6. Review the Preview deployment before merging to `master`. After the Production deployment, run the smoke checks below and record the final domain and deployment date with the project maintainer.
@@ -50,11 +50,11 @@ See [SECURITY.md](SECURITY.md) for database grants, API protections, and environ
 
 ## Avatar enrichment
 
-The scheduled worker processes a small batch every six hours. For an admin dry run, set `ADMIN_SECRET` in your shell and use:
+Avatar images are enriched by an explicitly started local Node.js script. After applying the migration, add `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` to ignored `.env.local` for a preview. Add `SUPABASE_SERVICE_ROLE_KEY` locally before making changes:
 
-```sh
-curl -X POST "$SINWAR_BASE_URL/api/admin/enrich-avatars?dryRun=1" \
-  -H "x-admin-secret: $ADMIN_SECRET"
+```powershell
+npm run avatars:dry-run
+npm run avatars:batch
 ```
 
-To process a batch, use the same command without `?dryRun=1` and send `-H "content-type: application/json" -d '{"batchSize":3}'`. The endpoint caps batches at 10 and never returns or logs secrets.
+The runner stores a local, ignored daily quota ledger, defaults to 3 profiles per batch and 12 upstream requests per UTC day, waits a fixed 3 seconds between requests, and stops on HTTP 429. `npm run avatars:day` continues in batches up to the daily cap. See [the avatar pipeline guide](docs/avatar-pipeline.md) for options and setup.

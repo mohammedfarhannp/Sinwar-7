@@ -1,9 +1,4 @@
 {
-  "crons": [{ "path": "/api/cron/enrich-avatars", "schedule": "0 */6 * * *" }],
-  "functions": {
-    "api/cron/enrich-avatars.ts": { "maxDuration": 300 },
-    "api/admin/enrich-avatars.ts": { "maxDuration": 300 }
-  },
   "rewrites": [
     { "source": "/robots.txt", "destination": "/api/robots" },
     { "source": "/sitemap.xml", "destination": "/api/sitemap" }

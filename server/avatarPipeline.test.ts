@@ -344,6 +344,7 @@ describe('selectAvatarBatch', () => {
       failed: 0,
       skipped: 0,
       remaining: 1,
+      rateLimited: false,
       preview: ['pending'],
     });
     expect(client.updates).toHaveLength(0);
@@ -383,9 +384,7 @@ describe('selectAvatarBatch', () => {
       client: client.client,
       batchSize: 3,
       fetchImpl,
-      delayMinMs: 2000,
-      delayMaxMs: 3000,
-      random: () => 0,
+      delayMs: 3000,
       sleep: vi.fn(async () => {}),
       now: () => new Date('2026-01-01T00:00:00.000Z'),
       log: vi.fn(),
@@ -400,6 +399,7 @@ describe('selectAvatarBatch', () => {
       failed: 0,
       skipped: 0,
       remaining: 3,
+      rateLimited: false,
     });
     expect(secondBatch).toEqual({
       processed: 3,
@@ -407,6 +407,7 @@ describe('selectAvatarBatch', () => {
       failed: 0,
       skipped: 0,
       remaining: 0,
+      rateLimited: false,
     });
     expect(
       requested.map((url) =>
@@ -435,5 +436,39 @@ describe('selectAvatarBatch', () => {
     ).toBe(true);
     expect(client.updates).toHaveLength(12);
     expect(options.sleep).toHaveBeenCalledTimes(4);
+    expect(options.sleep).toHaveBeenCalledWith(3000);
+  });
+
+  it('stops the batch after a provider rate limit', async () => {
+    const client = createWorkerClient(
+      ['one', 'two', 'three'].map((username) =>
+        row(username, 'pending', 0, null),
+      ),
+    );
+    const fetchImpl = vi.fn(async () => new Response(null, { status: 429 }));
+    const onRateLimited = vi.fn();
+    const onAttempt = vi.fn();
+    const summary = await enrichAvatarBatch({
+      client: client.client,
+      batchSize: 3,
+      fetchImpl,
+      onAttempt,
+      onRateLimited,
+      sleep: vi.fn(async () => {}),
+      log: vi.fn(),
+    });
+
+    expect(summary).toEqual({
+      processed: 1,
+      fetched: 0,
+      failed: 1,
+      skipped: 2,
+      remaining: 3,
+      rateLimited: true,
+    });
+    expect(onAttempt).toHaveBeenCalledOnce();
+    expect(onRateLimited).toHaveBeenCalledOnce();
+    expect(fetchImpl).toHaveBeenCalledOnce();
+    expect(client.uploads).toHaveLength(0);
   });
 });

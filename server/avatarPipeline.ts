@@ -37,12 +37,12 @@ export interface AvatarBatchOptions {
   usernames?: string[];
   dryRun?: boolean;
   fetchImpl?: typeof fetch;
-  delayMinMs?: number;
-  delayMaxMs?: number;
-  random?: () => number;
+  delayMs?: number;
   sleep?: (durationMs: number) => Promise<void>;
   now?: () => Date;
   log?: (event: AvatarFetchLog) => void;
+  onAttempt?: (username: string) => void | Promise<void>;
+  onRateLimited?: () => void | Promise<void>;
 }
 
 export interface AvatarFetchLog {
@@ -58,6 +58,7 @@ export interface AvatarBatchSummary {
   failed: number;
   skipped: number;
   remaining: number;
+  rateLimited: boolean;
   preview?: string[];
 }
 
@@ -155,24 +156,12 @@ export function readBatchSize(value = getEnv().ENRICH_BATCH_SIZE): number {
   return batchSize;
 }
 
-export function readDelayRange(
-  minValue = getEnv().ENRICH_DELAY_MS_MIN,
-  maxValue = getEnv().ENRICH_DELAY_MS_MAX,
-): { min: number; max: number } {
-  const min =
-    minValue === undefined || minValue === '' ? 2000 : Number(minValue);
-  const max =
-    maxValue === undefined || maxValue === '' ? 3000 : Number(maxValue);
-  if (
-    !Number.isInteger(min) ||
-    !Number.isInteger(max) ||
-    min < 0 ||
-    max < min ||
-    max > 10_000
-  ) {
+export function readDelayMs(value = getEnv().ENRICH_DELAY_MS): number {
+  const delayMs = value === undefined || value === '' ? 3000 : Number(value);
+  if (!Number.isInteger(delayMs) || delayMs < 1000 || delayMs > 10_000) {
     throw new AvatarPipelineError();
   }
-  return { min, max };
+  return delayMs;
 }
 
 function defaultSleep(durationMs: number): Promise<void> {
@@ -426,6 +415,7 @@ export async function enrichAvatarBatch(
       failed: 0,
       skipped: selection.skipped,
       remaining: selection.remaining,
+      rateLimited: false,
       preview: selection.rows.map((row) => row.username),
     };
   }
@@ -433,14 +423,13 @@ export async function enrichAvatarBatch(
   const fetchImpl = options.fetchImpl ?? fetch;
   const now = options.now ?? (() => new Date());
   const sleep = options.sleep ?? defaultSleep;
-  const random = options.random ?? Math.random;
   const log = options.log ?? defaultLogger;
-  const delayMin = options.delayMinMs ?? readDelayRange().min;
-  const delayMax = options.delayMaxMs ?? readDelayRange().max;
+  const delay = options.delayMs ?? readDelayMs();
   let processed = 0;
   let fetched = 0;
   let failed = 0;
   let skipped = selection.skipped;
+  let rateLimited = false;
 
   for (let index = 0; index < selection.rows.length; index += 1) {
     const row = selection.rows[index];
@@ -471,6 +460,7 @@ export async function enrichAvatarBatch(
     }
 
     processed += 1;
+    await options.onAttempt?.(claimed.username);
     let outcome: { status: 'fetched' | 'failed'; rateLimited: boolean };
     try {
       outcome = await processAvatar(options.client, claimed, fetchImpl, now);
@@ -505,6 +495,8 @@ export async function enrichAvatarBatch(
     });
 
     if (outcome.rateLimited) {
+      rateLimited = true;
+      await options.onRateLimited?.();
       const unprocessed = selection.rows.slice(index + 1);
       skipped += unprocessed.length;
       for (const skippedRow of unprocessed) {
@@ -519,7 +511,6 @@ export async function enrichAvatarBatch(
     }
 
     if (index < selection.rows.length - 1) {
-      const delay = delayMin + Math.floor(random() * (delayMax - delayMin + 1));
       await sleep(delay);
     }
   }
@@ -530,5 +521,6 @@ export async function enrichAvatarBatch(
     failed,
     skipped,
     remaining: await countRemaining(options.client),
+    rateLimited,
   };
 }

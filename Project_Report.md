@@ -381,3 +381,45 @@ Phases 0 through 8 are complete (9 of 9 planned phases). Phase 5 delivered the s
 - `6893fc4` — `test(api): cover search route behavior` — `api/search.test.ts`.
 - `b9c397e` — `test(api): cover account lookup route` — `api/account/[username].test.ts`.
 - The project report is committed separately using the same one-file convention.
+
+## Change 1 — Avatar enrichment
+
+### Plan
+
+1. Keep Supabase Storage as the cached-image source and `accounts.avatar_url` as the URL source of truth. Preserve the existing client fallback chain and image-loading behavior.
+2. Replace the proposed Vercel Cron and protected admin endpoints with an explicitly run local program, following the user's request after reviewing the Hobby cron limit.
+3. Use fixed request pacing and a local daily quota ledger. Do not disguise automation or imitate browser interaction to evade Instagram or provider safeguards.
+4. Document local setup, secret handling, provider limits, and commands. Remove unused cron/admin routes and environment settings.
+5. Run lint, typecheck, tests, formatting, and the production build; report limitations and stop for review. Do not begin Change 2 or Change 3.
+
+### Execution log
+
+- 2026-10-12: Implemented Change 1 as a local Node.js runner because the project already uses Node, Supabase JS, and Sharp. `npm run avatars:dry-run` uses the publishable key and performs read-only selection; actual runs require the service-role key locally. The runner processes sequentially, defaults to batches of 3, a fixed 3-second pause, and 12 upstream requests per UTC day (configurable up to 25). It records the quota before each request, serializes local runs, and stops after HTTP 429. It offers exact-username retries and an all-batches-for-today mode.
+- Removed the Vercel cron and HTTP admin routes, their auth/route tests, and cron/admin secret settings. Vercel retains only the app's existing rewrites and security headers. The existing avatar migration, Storage configuration, database URL handling, image cache, client fallbacks, and footer attribution remain in place.
+- Updated the avatar guide, README, security notes, sample environment, and ignored local quota files. Added only a script-specific Node globals rule to ESLint.
+- Verification passed: `npm run lint`, `npm run typecheck`, `npm run test` (8 files, 25 tests), `npm run format:check`, `npm run build`, `node --check scripts/enrich-avatars.mjs`, `npm run avatars:help`, and `git diff --check`. The production build validated 4,073 accounts and produced the directory JSON asset at 968.65 KB raw / 51.96 KB gzip; app entry JavaScript was 179.82 KB raw / 58.70 KB gzip. Build-generated timestamp-only changes to the cleaning and count reports were reverted.
+- No dry run or live request was sent to Unavatar or Supabase: `.env.local` is absent, and the avatar migration has not been applied to the hosted project. Run the read-only preview first after configuring local credentials; apply the migration before any real batch.
+- No commits were created in this environment. Git metadata is read-only here; an earlier attempt to update `.git/index.lock` was denied.
+
+### Verification output and remaining setup
+
+The local help command ran without a configured `.env.local` and made no Supabase or provider requests:
+
+```text
+Usage:
+  npm run avatars:dry-run
+  npm run avatars:batch [-- --batch-size 3]
+  npm run avatars:day [-- --batch-size 3]
+```
+
+Before a real batch, apply the avatar migration and add the local Supabase URL and keys. There are no open implementation decisions for Change 1. Review it before proceeding; Change 3 still requires the user's choice of Option A, B, or C.
+
+### Files added, changed, or removed
+
+- Local runner/config: `scripts/enrich-avatars.mjs`, `package.json`, `.gitignore`, `eslint.config.js`, `.env.example`, `vercel.json`.
+- Pipeline and coverage: `server/avatarPipeline.ts`, `server/avatarPipeline.test.ts`, `server/supabase.ts`; removed `server/avatarAuth.ts`, `server/avatarAuth.test.ts`, `server/avatarRoute.ts`, `server/avatarRoute.test.ts`, `api/admin/enrich-avatars.ts`, and `api/cron/enrich-avatars.ts`.
+- Documentation: `README.md`, `SECURITY.md`, `docs/avatar-pipeline.md`, and this report.
+
+### Review boundary
+
+Change 1 is ready for review. Change 2 (the logo) and Change 3 (categories) remain unstarted. Before Change 3, ask the user to choose Option A, B, or C from the original specification.

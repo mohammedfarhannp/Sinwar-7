@@ -40,7 +40,7 @@ export function getServerSupabaseClient(): SupabaseClient<Database> {
 }
 
 /**
- * The elevated client is reserved for the protected avatar-enrichment routes.
+ * The elevated client is reserved for the explicitly run local avatar script.
  * Public search and account endpoints must continue to use the publishable key.
  */
 export function getServerSupabaseAdminClient(): SupabaseClient<Database> {

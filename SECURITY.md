@@ -4,9 +4,8 @@
 
 - The browser calls only the same-origin `/api/search` and `/api/account/:username` routes. It does not create a Supabase client or query Supabase directly.
 - Search and account Vercel Functions use `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY`. The database's `anon` grants and RLS policies apply to those public reads.
-- Only the protected avatar-enrichment routes use `SUPABASE_SERVICE_ROLE_KEY`, which bypasses RLS. The key is read only by `getServerSupabaseAdminClient()` and must remain in Vercel server environment settings; it must never be sent to the browser, included in build variables, or given a `VITE_` prefix. Rotate it in Supabase if exposed.
-- `CRON_SECRET` protects the scheduled `GET /api/cron/enrich-avatars` route through Vercel's `Authorization: Bearer ...` header. `ADMIN_SECRET` protects `POST /api/admin/enrich-avatars` through `x-admin-secret`. Both are server-only and must not use a `VITE_` prefix. Use long random values and keep them out of logs, URLs, and source control.
-- `ENRICH_BATCH_SIZE`, `ENRICH_DELAY_MS_MIN`, and `ENRICH_DELAY_MS_MAX` tune server-side worker behavior. The batch size defaults to 3 and is capped at 10.
+- The local avatar-enrichment script uses `SUPABASE_SERVICE_ROLE_KEY`, which bypasses RLS, to update account rows and upload cached images. Keep it only in the local ignored `.env.local` file; do not put it in Vercel, client code, build variables, or logs. Rotate it in Supabase if exposed.
+- `ENRICH_BATCH_SIZE`, `ENRICH_DELAY_MS`, and `ENRICH_DAILY_REQUEST_LIMIT` tune the local runner. Defaults are 3 profiles per batch, a fixed 3-second pause, and 12 provider requests per UTC day. Batch size is capped at 10 and the daily limit cannot exceed the provider's documented 25 requests per IP per day.
 - Publishable keys are designed for public components and do not bypass RLS. Never substitute a secret/service-role key for the publishable key in read-only API routes. Never commit a real `.env` file or include any secret in client code or build variables.
 - `@supabase/ssr` is installed as requested but the app has no browser session or authentication flow that needs cookie-aware SSR.
 - `public.accounts` has RLS enabled. `anon` and `authenticated` may select rows but have no insert, update, or delete grants or policies. The search RPC is `SECURITY INVOKER`, validates its arguments, and has execute permission only for the intended API roles. API routes only issue reads.
@@ -14,11 +13,11 @@
 
 ## Environment setup
 
-1. Copy `.env.example` to `.env.local` for local function development. Set the Supabase URL and publishable key for reads. Set `SUPABASE_SERVICE_ROLE_KEY`, `CRON_SECRET`, and `ADMIN_SECRET` only in trusted server environments when enabling avatar enrichment. `.env*` files are ignored by Git except `.env.example`.
-2. Set `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` in Vercel Production and Preview. To enable enrichment, also set the three server-only secrets and optional batch/delay settings. None of these secrets may be `VITE_`-prefixed.
-3. Apply `supabase/migrations/20261009183000_create_accounts.sql` and then `supabase/migrations/20261011230000_add_avatar_enrichment.sql` before enabling the worker. Load `supabase/seed.sql` to seed accounts. The seed file is generated from the validated JSON source by `npm run db:seed:build`; `npm run build` regenerates it after rebuilding and validating the source list.
-4. `npm run dev` starts Vite only, so calls to `/api/*` fall back to the local Fuse search during ordinary frontend development. To run the Vercel Functions locally, install/use the Vercel CLI and run `vercel dev` with the server environment variables available.
-5. See [docs/avatar-pipeline.md](docs/avatar-pipeline.md) for batch verification and provider limits.
+1. Copy `.env.example` to `.env.local` for local development. Set the Supabase URL and publishable key for reads. Add the service-role key only if running the local avatar script. `.env*` files are ignored by Git except `.env.example`.
+2. Set only `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` in Vercel Production and Preview. Never deploy the avatar runner's service-role key or daily quota settings.
+3. Apply `supabase/migrations/20261009183000_create_accounts.sql` and then `supabase/migrations/20261011230000_add_avatar_enrichment.sql` before running local avatar enrichment. Load `supabase/seed.sql` to seed accounts. The seed file is generated from the validated JSON source by `npm run db:seed:build`; `npm run build` regenerates it after rebuilding and validating the source list.
+4. `npm run dev` starts Vite only, so calls to `/api/*` fall back to the local Fuse search during ordinary frontend development.
+5. See [docs/avatar-pipeline.md](docs/avatar-pipeline.md) for local runner usage and provider limits.
 
 ## API protections and limits
 
