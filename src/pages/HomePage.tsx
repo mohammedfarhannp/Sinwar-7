@@ -60,11 +60,13 @@ export function HomePage() {
   return (
     <div className="home-page">
       <section className="hero motif" aria-labelledby="home-title">
-        <p className="eyebrow">A personal checklist, at your own pace</p>
-        <h1 id="home-title">Make space for choices that feel right to you.</h1>
+        <p className="eyebrow">Operation Blockout · Boycott for Gaza</p>
+        <h1 id="home-title">Don’t reward silence with your attention.</h1>
         <p className="hero-copy">
-          Search a community-maintained directory, review the information, and
-          keep track of your own decisions on this device.
+          Operation Blockout is a collective boycott of public figures people
+          believe have stayed silent about the genocide in Gaza. Find an
+          account, check their public statements, then decide where your
+          follows, views, and spending go.
         </p>
         <SearchBar
           query={query}
@@ -72,8 +74,8 @@ export function HomePage() {
           onSubmit={handleSubmit}
         />
         <p className="phase-note">
-          Search a username and refine by category. Press Ctrl/⌘+K to focus the
-          search field.
+          Search a username, review the account, and choose whether to boycott
+          or block. Press Ctrl/⌘+K to focus search.
         </p>
         <DatasetNotice />
         <div className="hero-note">
@@ -82,20 +84,20 @@ export function HomePage() {
           </span>
           <div>
             <p>
-              Your checklist stays on this device. No account or automatic
-              actions are part of this experience.
+              Your Blockout list stays on this device. This site does not
+              unfollow, block, report, or contact anyone for you.
             </p>
             <p className="blocked-progress" aria-live="polite">
               {isLoadingFeatured || hasFeaturedError
-                ? `You have ${blocked.usernames.length} profiles on your personal list.`
-                : `You’ve added ${blocked.usernames.length} / ${directoryCount} profiles to your personal list.`}
+                ? `You have ${blocked.usernames.length} profiles on your Blockout list.`
+                : `You’ve added ${blocked.usernames.length} / ${directoryCount} profiles to your Blockout list.`}
             </p>
           </div>
         </div>
         {blocked.storageError && (
           <p className="storage-error" role="alert">
-            Your list could not be saved in this browser. Check its local
-            storage settings and try again.
+            Your Blockout list could not be saved in this browser. Check its
+            local storage settings and try again.
           </p>
         )}
       </section>
@@ -103,11 +105,11 @@ export function HomePage() {
       <section className="featured-section" aria-labelledby="featured-title">
         <div className="section-heading">
           <div>
-            <p className="eyebrow">Start browsing</p>
-            <h2 id="featured-title">Featured profiles</h2>
+            <p className="eyebrow">Take a closer look</p>
+            <h2 id="featured-title">From the directory</h2>
           </div>
           <Link className="text-link" to="/search">
-            Browse the directory
+            Search all accounts
           </Link>
         </div>
         {isLoadingFeatured && <ProfileSkeletonGrid />}
@@ -121,7 +123,7 @@ export function HomePage() {
         )}
         {!isLoadingFeatured && hasFeaturedError && (
           <EmptyState
-            title="Featured profiles are unavailable"
+            title="The directory sample is unavailable"
             description="Check your connection and reload the page to try again."
           />
         )}
