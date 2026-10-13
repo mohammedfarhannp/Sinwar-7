@@ -11,34 +11,34 @@ interface PageDescription {
 function describePage(pathname: string): PageDescription {
   if (pathname === '/') {
     return {
-      title: 'Sinwar-7 — Personal account checklist',
+      title: 'Operation Blockout — Boycott silence. Reclaim attention.',
       description:
-        'A calm, community-maintained directory and personal account checklist.',
+        'A community-led boycott directory for people choosing to withdraw follows, views, and spending from celebrities they believe have stayed silent about the genocide in Gaza.',
       robots: 'index, follow',
     };
   }
 
   if (pathname === '/search') {
     return {
-      title: 'Search accounts | Sinwar-7',
+      title: 'Search the directory | Operation Blockout',
       description:
-        'Search the community-maintained public account directory by username and category.',
+        'Search public Instagram usernames, review each account’s statements, and decide whether to boycott or block.',
       robots: 'noindex, follow',
     };
   }
 
   if (pathname === '/blocked') {
     return {
-      title: 'Personal checklist | Sinwar-7',
+      title: 'Your Blockout list | Operation Blockout',
       description:
-        'Manage the private account checklist saved in this browser.',
+        'Keep a private record of your boycott choices in this browser. No Instagram actions are automated.',
       robots: 'noindex, nofollow',
     };
   }
 
   if (pathname === '/story') {
     return {
-      title: 'Palestinian history timeline | Sinwar-7',
+      title: 'Palestinian history timeline | Operation Blockout',
       description:
         'A sourced timeline of selected events, agreements, and public records in Palestinian history.',
       robots: 'index, follow',
@@ -47,27 +47,27 @@ function describePage(pathname: string): PageDescription {
 
   if (pathname === '/about') {
     return {
-      title: 'About and methodology | Sinwar-7',
+      title: 'Why Operation Blockout | About and methodology',
       description:
-        'How Sinwar-7 selects public records, attributes findings, and maintains its timeline.',
+        'Why Operation Blockout exists, what the directory does and does not verify, and how the Palestinian history timeline is sourced.',
       robots: 'index, follow',
     };
   }
 
   if (pathname === '/donate' && features.donate) {
     return {
-      title: 'Donate | Sinwar-7',
+      title: 'Donate | Operation Blockout',
       description:
-        'Donation information shared by Sinwar-7 after destination review.',
+        'Donation information shared by Operation Blockout after destination review.',
       robots: 'index, follow',
     };
   }
 
   if (pathname === '/stores-apps' && features.storesApps) {
     return {
-      title: 'Stores and apps | Sinwar-7',
+      title: 'Stores and apps | Operation Blockout',
       description:
-        'Official publisher pages and verified store listings shared by Sinwar-7.',
+        'Official publisher pages and verified store listings shared by Operation Blockout.',
       robots: 'index, follow',
     };
   }
@@ -82,15 +82,15 @@ function describePage(pathname: string): PageDescription {
     }
 
     return {
-      title: `@${username} | Sinwar-7`,
-      description: `Review the public directory entry for @${username}.`,
+      title: `@${username} | Operation Blockout`,
+      description: `Review the directory entry for @${username} and check the account’s public statements for yourself.`,
       robots: 'index, follow',
     };
   }
 
   return {
-    title: 'Page not found | Sinwar-7',
-    description: 'This Sinwar-7 page could not be found.',
+    title: 'Page not found | Operation Blockout',
+    description: 'This Operation Blockout page could not be found.',
     robots: 'noindex, nofollow',
   };
 }
