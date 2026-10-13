@@ -1,10 +1,10 @@
-# Sinwar-7 Project Report
+# Operation Blockout Project Report
 
-Last updated: 2026-10-11
+Last updated: 2026-10-13
 
 ## Project objective
 
-Build a static-first, accessible web application for searching a curated list of public Instagram accounts and keeping a private, local block checklist. The tone stays neutral and educational. The frontend is planned for Vercel. Supabase is the chosen backend for the later backend phase, with SQL migrations stored in the repository.
+Build a static-first, accessible web application for Operation Blockout: a community-led boycott directory for people choosing to withdraw follows, views, and spending from public figures they believe have stayed silent about the genocide in Gaza. The browser-local Blockout list records a user's choices without taking Instagram actions. The directory contains usernames and does not verify individual public statements or positions. The frontend is planned for Vercel. Supabase is the chosen backend, with SQL migrations stored in the repository.
 
 ## Project-wide working method
 
@@ -422,4 +422,67 @@ Before a real batch, apply the avatar migration and add the local Supabase URL a
 
 ### Review boundary
 
-Change 1 is ready for review. Change 2 (the logo) and Change 3 (categories) remain unstarted. Before Change 3, ask the user to choose Option A, B, or C from the original specification.
+At this boundary, Change 1 was ready for review. Change 2 and Change 3 were unstarted. Change 3 still requires the user to choose Option A, B, or C from the original specification.
+
+## Change 2 — Operation Blockout copy and logo
+
+### Scope
+
+1. Replace generic checklist language with direct Operation Blockout campaign copy about boycotting public figures in response to silence on the genocide in Gaza.
+2. Add an accessible reusable logo with a red inverted-triangle SVG and Operation Blockout wordmark. Use it in the site header, navigation panel, footer, About page, and 404 page.
+3. Update browser/document titles, social metadata, favicon, installed-app icons, manifest, and service-worker cache identity.
+4. Preserve the category filters and cards. The directory does not document each account's statements, silence, or position, so the revised copy says this clearly and asks visitors to check public statements themselves.
+5. Run the quality checks and production build, record changed files and per-file commits, then stop before Change 3.
+
+### Execution log
+
+- 2026-10-13: Replaced the neutral homepage, search, profile, saved-list, About, navigation, and footer copy with Operation Blockout language. The Blockout list is described as a local record only; the site does not unfollow, block, report, or contact accounts. The directory disclaimer explicitly states that usernames are not evidence of any person's silence or position.
+- Added `src/components/Logo.tsx`: the triangle is an inline SVG using `currentColor` and the `--accent` token; its wordmark is accessible text, while the SVG is hidden from assistive technology when the wordmark is present. Header sizing is 32 px by default and 28 px on mobile.
+- Replaced the old square mark with a red triangle in the browser tab and site. Added `scripts/build-brand-icons.mjs` and `npm run brand:icons` to generate `favicon.ico` frames at 16/32/48 px, `apple-touch-icon.png` at 180 px, and PWA PNG icons at 192/512 px. The service-worker cache version changed so returning installs can receive the new assets.
+- Verification passed: `npm run brand:icons`; icon inspection confirmed 180×180, 192×192, and 512×512 PNGs plus 16/32/48 ICO frames; `node --check public/sw.js`; manifest JSON parsing; `npm run lint`; `npm run typecheck`; `npm run test` (8 files, 25 tests); `npm run format:check`; `npm run build`; and `git diff --check`. The build validated 4,073 accounts. The two timestamp-only changes from the build were restored.
+- No account categories or underlying directory records were changed. No external site or service was contacted.
+
+### Files added or changed
+
+- Brand component and placement: `src/components/Logo.tsx`, `src/components/SiteHeader.tsx`, `src/components/SiteFooter.tsx`, `src/components/NavigationPanel.tsx`, `src/pages/AboutPage.tsx`, `src/pages/NotFoundPage.tsx`, `src/styles/theme.css`.
+- Campaign text and metadata: `src/components/DatasetNotice.tsx`, `src/components/PageMetadata.tsx`, `src/components/ProfileCard.tsx`, `src/components/RouteErrorBoundary.tsx`, `src/components/SearchBar.tsx`, `src/main.tsx`, `src/pages/BlockedPage.tsx`, `src/pages/HomePage.tsx`, `src/pages/PlaceholderPage.tsx`, `src/pages/ProfilePage.tsx`, `src/pages/SearchPage.tsx`.
+- Browser and install icons: `index.html`, `public/apple-touch-icon.png`, `public/favicon.ico`, `public/favicon.svg`, `public/icon-192.png`, `public/icon-512.png`, `public/icon.svg`, `public/manifest.webmanifest`, `public/sw.js`, `scripts/build-brand-icons.mjs`, `package.json`.
+- Project documentation: `README.md`, `Project_Report.md`.
+
+### Per-file commits
+
+- `09d3419` — `feat(brand): add red triangle logo component` — `src/components/Logo.tsx`.
+- `ca704c4` — `feat(brand): rebrand the site header` — `src/components/SiteHeader.tsx`.
+- `defa80f` — `feat(navigation): add Blockout branding` — `src/components/NavigationPanel.tsx`.
+- `2efa19a` — `copy(footer): explain the Blockout campaign` — `src/components/SiteFooter.tsx`.
+- `16469a3` — `style(brand): add responsive triangle logo styles` — `src/styles/theme.css`.
+- `8f15bfc` — `feat(pwa): replace app mark with red triangle` — `public/icon.svg`.
+- `be041d1` — `feat(pwa): add triangle SVG favicon` — `public/favicon.svg`.
+- `ad03b0e` — `feat(pwa): add multi-size ICO favicon` — `public/favicon.ico`.
+- `215ad12` — `feat(pwa): add Apple touch icon` — `public/apple-touch-icon.png`.
+- `a0fa612` — `feat(pwa): add 192 pixel app icon` — `public/icon-192.png`.
+- `710877b` — `feat(pwa): add 512 pixel app icon` — `public/icon-512.png`.
+- `a8e4f3e` — `feat(pwa): rebrand the app manifest` — `public/manifest.webmanifest`.
+- `4ad81de` — `fix(pwa): refresh branded offline assets` — `public/sw.js`.
+- `4414029` — `feat(seo): set Operation Blockout page identity` — `index.html`.
+- `c6a8b74` — `feat(seo): rebrand route metadata` — `src/components/PageMetadata.tsx`.
+- `1f5c260` — `copy(dataset): clarify directory evidence limits` — `src/components/DatasetNotice.tsx`.
+- `9ffeeda` — `copy(search): clarify username search` — `src/components/SearchBar.tsx`.
+- `e4dc174` — `copy(home): introduce Operation Blockout` — `src/pages/HomePage.tsx`.
+- `e53e8fc` — `copy(search): frame account review` — `src/pages/SearchPage.tsx`.
+- `dc85991` — `copy(blockout): rename the saved list` — `src/pages/BlockedPage.tsx`.
+- `fc1ebc7` — `copy(profile-card): label Blockout actions` — `src/components/ProfileCard.tsx`.
+- `9c39c01` — `copy(profile): clarify account review` — `src/pages/ProfilePage.tsx`.
+- `fa95e66` — `copy(about): explain the campaign purpose` — `src/pages/AboutPage.tsx`.
+- `0a2dc87` — `feat(brand): add triangle to 404 page` — `src/pages/NotFoundPage.tsx`.
+- `a04bfe6` — `copy(pages): use Operation Blockout name` — `src/pages/PlaceholderPage.tsx`.
+- `d058f02` — `copy(errors): reference the Blockout list` — `src/components/RouteErrorBoundary.tsx`.
+- `8610948` — `chore(brand): rename offline warning` — `src/main.tsx`.
+- `803ab6b` — `build(icons): generate triangle brand assets` — `scripts/build-brand-icons.mjs`.
+- `aa3a49d` — `build(icons): add icon generation command` — `package.json`.
+- `f8e1060` — `docs(brand): explain Operation Blockout` — `README.md`.
+- This report receives a separate final documentation commit.
+
+### Review boundary
+
+Change 2 is complete. Stop here for review. Change 3 remains unstarted; ask the user to choose Option A, B, or C before implementing category changes.
