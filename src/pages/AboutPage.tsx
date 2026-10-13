@@ -32,12 +32,12 @@ export function AboutPage() {
       <div className="information-card">
         <h2>Timeline methodology</h2>
         <p>
-          Timeline entries are a concise selection, checked against the public
-          records linked on each entry, including United Nations resolutions,
-          reports, and court documents. Legal findings are attributed to the
-          body that issued them. Dates and descriptions may be revised when
-          source records are corrected or new records become available, and
-          historical interpretations can differ.
+          Timeline entries are concise historical summaries supported by
+          reporting from established international news organizations, linked
+          with each entry. Entries about legal rulings also link to the issuing
+          court’s opinion where available; legal findings are attributed to the
+          court. Dates and descriptions may be revised as reporting and records
+          change, and historical interpretations can differ.
         </p>
       </div>
     </section>
