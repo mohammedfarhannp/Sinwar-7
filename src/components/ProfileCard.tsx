@@ -67,7 +67,7 @@ export function ProfileCard({
           }
           aria-pressed={isBlocked}
         >
-          {isBlocked ? 'Remove from my list' : 'Add to my block list'}
+          {isBlocked ? 'Remove from Blockout list' : 'Add to Blockout list'}
         </button>
       </div>
       <p className="sr-only" role="status" aria-live="polite">
